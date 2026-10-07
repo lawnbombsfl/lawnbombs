@@ -52,7 +52,10 @@
 const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbz5iW0TlUrADO5mq7DhDCYyB1bAmkLjzN8mmm73J0GSEK6RNN70KMLZXTd2-Usg0sGg/exec";
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-const PRICE_STANDARD = 90;   // flat price for every sign type
+const PRICE_STANDARD = 90;   // flat price for every sign type (includes 2 days in the yard)
+const INCLUDED_DAYS  = 2;    // days in the yard included in the price
+const MAX_DAYS       = 5;    // longest a customer can keep the sign up
+const EXTRA_DAY_PRICE = 10;  // per extra day beyond INCLUDED_DAYS
 const PHONE_DISPLAY  = "239-494-2377";
 const PHONE_LINK     = "+12394942377";
 
@@ -487,8 +490,20 @@ const INSTAGRAM_URL = "";
       <div class="field">
         <label for="celebrationDate">Date of celebration <span class="req" aria-hidden="true">*</span></label>
         <input type="date" id="celebrationDate" name="celebrationDate" required aria-describedby="err-celebrationDate hint-date">
-        <div class="hint" id="hint-date">We set up the evening before and pick up the next day.</div>
+        <div class="hint" id="hint-date">We set up the evening before so it's waiting that morning.</div>
         <div class="err" id="err-celebrationDate" aria-live="polite"></div>
+      </div>
+
+      <div class="field">
+        <label for="yardDays">How long do you want the sign up?</label>
+        <select id="yardDays" name="yardDays" aria-describedby="hint-days hint-pickup">
+          <option value="2" selected>2 days (included)</option>
+          <option value="3">3 days (+$10)</option>
+          <option value="4">4 days (+$20)</option>
+          <option value="5">5 days (+$30)</option>
+        </select>
+        <div class="hint" id="hint-days">Includes 2 days in the yard (your celebration day and the next day). Extra days $10/day, up to 5 days.</div>
+        <div class="hint" id="hint-pickup" aria-live="polite">We pick it up the day after your celebration. Total: <b id="inlineTotal">$90</b></div>
       </div>
 
       <div class="field">
@@ -558,7 +573,7 @@ const INSTAGRAM_URL = "";
     <h2 class="section-title">Questions</h2>
     <details>
       <summary>When do you set up and pick up?</summary>
-      <p>We set the sign up the evening before your celebration so it's waiting in the morning, then pick it up the next day. You don't need to be home.</p>
+      <p>We set the sign up the evening before your celebration so it's waiting in the morning. It includes 2 days in the yard (your celebration day and the next day), then we pick it up. Want it up longer? Extra days are $10/day, up to 5 days total. You don't need to be home.</p>
     </details>
     <details>
       <summary>How far ahead should I book?</summary>
@@ -566,7 +581,7 @@ const INSTAGRAM_URL = "";
     </details>
     <details>
       <summary>How do I pay?</summary>
-      <p>Nothing up front. You pay $90 after the sign is up, by cash, Zelle or Venmo.</p>
+      <p>Nothing up front. You pay $90 after the sign is up (plus $10 for each extra day if you keep it longer than 2 days), by cash, Zelle or Venmo.</p>
     </details>
     <details>
       <summary>What areas do you cover?</summary>
@@ -716,20 +731,51 @@ const INSTAGRAM_URL = "";
     var r = form.querySelector('input[name="celebrationType"]:checked');
     return r ? r.value : "Birthday";
   }
-  function currentPrice() { return PRICE_STANDARD; }   // every sign type, every address
+  function currentDays() {
+    var n = parseInt($("yardDays").value, 10);
+    if (!(n >= INCLUDED_DAYS)) n = INCLUDED_DAYS;
+    return Math.min(n, MAX_DAYS);
+  }
+  function extraDays() { return currentDays() - INCLUDED_DAYS; }
+  // $90 for every sign type, every address, plus $10 per extra day in the yard
+  function currentPrice() { return PRICE_STANDARD + extraDays() * EXTRA_DAY_PRICE; }
+  function daysLabel() {
+    var x = extraDays();
+    return currentDays() + " days" + (x ? " (+$" + x * EXTRA_DAY_PRICE + ")" : " (included)");
+  }
+  // Pickup = celebration date + (days - 1): 2 days -> picked up the next day.
+  function pickupISO() {
+    var v = $("celebrationDate").value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return "";
+    var p = v.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2]);
+    d.setDate(d.getDate() + currentDays() - 1);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function pickupText() {
+    var iso = pickupISO(), after = currentDays() - 1;
+    if (iso) return "We pick it up " + prettyDate(iso) + ".";
+    return "We pick it up " + (after === 1 ? "the day after" : after + " days after") + " your celebration.";
+  }
   function updatePrice() {
     var price = currentPrice(), el = $("price");
     el.textContent = "$" + price;
     el.setAttribute("data-price", price);
     var type = currentType();
     $("priceLabel").textContent = (type === "Other" ? "Custom" : type) + " sign";
-    $("priceNote").textContent = "Setup, personalization & pickup included";
+    $("priceNote").textContent = extraDays()
+      ? currentDays() + " days in the yard (+$" + extraDays() * EXTRA_DAY_PRICE + ")"
+      : "Setup, pickup & 2 days in the yard included";
     $("submitBtn").textContent = "Request my sign · $" + price;
+    $("hint-pickup").firstChild.nodeValue = pickupText() + " Total: ";
+    $("inlineTotal").textContent = "$" + price;
   }
 
   form.querySelectorAll('input[name="celebrationType"]').forEach(function (r) {
     r.addEventListener("change", updatePrice);
   });
+  $("yardDays").addEventListener("change", updatePrice);
+  $("celebrationDate").addEventListener("change", updatePrice);
+  $("celebrationDate").addEventListener("input", updatePrice);
   updatePrice();
 
   // ----- Phone formatting: (any input) -> 239-555-0123 -----
@@ -847,8 +893,17 @@ const INSTAGRAM_URL = "";
       address: $("address").value.trim(),
       colors: $("colors").value.trim(),
       theme: $("theme").value.trim(),
-      price: currentPrice(),                // display only; the script sets the real price ($90)
-      notes: $("notes").value.trim(),
+      price: currentPrice(),                // display only; the script sets its own price column
+      yardDays: currentDays(),              // 2-5 days in the yard
+      extraDays: extraDays(),               // 0-3 extra days at $10/day
+      total: currentPrice(),                // $90 + $10 per extra day
+      pickupDate: pickupISO(),
+      customerNotes: $("notes").value.trim(),
+      // The Apps Script only saves known fields, so the yard time + total also ride
+      // along at the top of Notes (shows in the sheet and the email without a redeploy).
+      notes: "Yard time: " + daysLabel() + " | Total: $" + currentPrice() +
+             (pickupISO() ? " | Pickup: " + prettyDate(pickupISO()) : "") +
+             ($("notes").value.trim() ? "\n" + $("notes").value.trim() : ""),
       heardFrom: $("heardFrom").value,
       website: $("website").value,          // honeypot
       pageUrl: location.href,
@@ -899,7 +954,8 @@ const INSTAGRAM_URL = "";
       ["Date", prettyDate(d.celebrationDate)],
       ["Address", d.address],
       ["Phone", d.phone],
-      ["Price", "$" + d.price]
+      ["Sign up for", d.yardDays + " days" + (d.pickupDate ? " (pickup " + prettyDate(d.pickupDate) + ")" : "")],
+      ["Total", "$" + d.total]
     ];
     var box = $("summary");
     box.textContent = "";
