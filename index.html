@@ -6,13 +6,13 @@
 <meta name="theme-color" content="#7b4dff">
 <meta name="format-detection" content="telephone=no">
 <title>Order a Yard Sign | LawnBombs</title>
-<meta name="description" content="Book a LawnBombs celebration yard sign in Bonita Springs, Estero and Fort Myers (Lee County, FL). Setup the night before, pickup the next day. $90, pay after it's up.">
+<meta name="description" content="Book a LawnBombs celebration yard sign in Bonita Springs, Estero and Fort Myers (Lee County, FL). Set up the morning of your event and picked up the next day (2 days included, extra days +$10/day). $90, pay after it's up.">
 <link rel="canonical" href="https://lawnbombsfl.com/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%89%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="LawnBombs">
 <meta property="og:title" content="LawnBombs: Celebration Yard Signs in Bonita Springs, Estero &amp; Fort Myers">
-<meta property="og:description" content="Personalized yard signs for birthdays, babies, grads and more. We set it up the night before. $90, pay after it's up.">
+<meta property="og:description" content="Personalized yard signs for birthdays, babies, grads and more. We set it up the morning of your event. $90 includes 2 days, pay after it's up.">
 <meta property="og:url" content="https://lawnbombsfl.com/">
 <meta property="og:image" content="https://lawnbombsfl.com/photos/sign-5-hero.jpg">
 <meta property="og:image:width" content="980">
@@ -24,7 +24,7 @@
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "LawnBombs",
-  "description": "Personalized celebration yard signs, set up the night before and picked up the next day.",
+  "description": "Personalized celebration yard signs, set up the morning of your event and picked up the next day (2 days included).",
   "url": "https://lawnbombsfl.com/",
   "image": "https://lawnbombsfl.com/photos/sign-5-hero.jpg",
   "telephone": "+1-239-494-2377",
@@ -415,7 +415,7 @@ const INSTAGRAM_URL = "";
   </figure>
 
   <div class="perks" id="perks">
-    <div class="perk"><b>Night before</b>We set it up</div>
+    <div class="perk"><b>Morning of</b>We set it up</div>
     <div class="perk"><b>Personalized</b>Name, colors, theme</div>
     <div class="perk"><b>Pay after</b>Once it's up</div>
   </div>
@@ -490,7 +490,7 @@ const INSTAGRAM_URL = "";
       <div class="field">
         <label for="celebrationDate">Date of celebration <span class="req" aria-hidden="true">*</span></label>
         <input type="date" id="celebrationDate" name="celebrationDate" required aria-describedby="err-celebrationDate hint-date">
-        <div class="hint" id="hint-date">We set up the evening before so it's waiting that morning.</div>
+        <div class="hint" id="hint-date">We set it up the morning of your event.</div>
         <div class="err" id="err-celebrationDate" aria-live="polite"></div>
       </div>
 
@@ -502,8 +502,8 @@ const INSTAGRAM_URL = "";
           <option value="4">4 days (+$20)</option>
           <option value="5">5 days (+$30)</option>
         </select>
-        <div class="hint" id="hint-days">Includes 2 days in the yard (your celebration day and the next day). Extra days $10/day, up to 5 days.</div>
-        <div class="hint" id="hint-pickup" aria-live="polite">We pick it up the day after your celebration. Total: <b id="inlineTotal">$90</b></div>
+        <div class="hint" id="hint-days">$90 includes 2 days in the yard (your event day and the next day). Extra days are +$10/day, up to 5 days.</div>
+        <div class="hint" id="hint-pickup" aria-live="polite">We pick it up the next day. Total: <b id="inlineTotal">$90</b></div>
       </div>
 
       <div class="field">
@@ -573,7 +573,7 @@ const INSTAGRAM_URL = "";
     <h2 class="section-title">Questions</h2>
     <details>
       <summary>When do you set up and pick up?</summary>
-      <p>We set the sign up the evening before your celebration so it's waiting in the morning. It includes 2 days in the yard (your celebration day and the next day), then we pick it up. Want it up longer? Extra days are $10/day, up to 5 days total. You don't need to be home.</p>
+      <p>We set the sign up the morning of your event. $90 includes 2 days in the yard (your event day and the next day), and we pick it up the next day. Want it up longer? Extra days are +$10/day, up to 5 days total, and we pick it up after your last day. You don't need to be home.</p>
     </details>
     <details>
       <summary>How far ahead should I book?</summary>
@@ -593,7 +593,7 @@ const INSTAGRAM_URL = "";
     </details>
     <details>
       <summary>Can it be a surprise?</summary>
-      <p>Absolutely. We set up after dark, so it's there when they wake up. Add "it's a surprise" in the notes and we'll only contact you.</p>
+      <p>Absolutely. We set up the morning of your event. Add "it's a surprise" in the notes (plus when they usually wake up or leave the house) and we'll time it as best we can and only contact you.</p>
     </details>
     <details>
       <!-- REVIEW THIS: change to match your real weather policy -->
@@ -753,8 +753,8 @@ const INSTAGRAM_URL = "";
   }
   function pickupText() {
     var iso = pickupISO(), after = currentDays() - 1;
-    if (iso) return "We pick it up " + prettyDate(iso) + ".";
-    return "We pick it up " + (after === 1 ? "the day after" : after + " days after") + " your celebration.";
+    if (iso) return "Set up the morning of " + prettyDate($("celebrationDate").value) + ", picked up " + prettyDate(iso) + ".";
+    return "We pick it up " + (after === 1 ? "the next day" : after + " days after your event") + ".";
   }
   function updatePrice() {
     var price = currentPrice(), el = $("price");
@@ -829,7 +829,7 @@ const INSTAGRAM_URL = "";
       if (!v) return "Please pick the date of the celebration.";
       if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return "Please pick a valid date.";
       if (v < todayISO()) return "That date has already passed. Please pick a future date.";
-      if (v < earliestISO()) return "That's too soon to book online since we set up the night before. Please text us at " + PHONE_DISPLAY + " and we'll try to fit you in!";
+      if (v < earliestISO()) return "That's too soon to book online. Please text us at " + PHONE_DISPLAY + " and we'll try to fit you in!";
       return "";
     },
     address: function (v) {
@@ -954,6 +954,7 @@ const INSTAGRAM_URL = "";
       ["Date", prettyDate(d.celebrationDate)],
       ["Address", d.address],
       ["Phone", d.phone],
+      ["Setup", "Morning of " + prettyDate(d.celebrationDate)],
       ["Sign up for", d.yardDays + " days" + (d.pickupDate ? " (pickup " + prettyDate(d.pickupDate) + ")" : "")],
       ["Total", "$" + d.total]
     ];
@@ -970,6 +971,7 @@ const INSTAGRAM_URL = "";
     $("extras").style.display = "none";
     $("faq").style.display = "none";
     $("pricebar").style.display = "none";
+    document.querySelector(".cbtn.book").style.display = "none";   // form is hidden on the thank-you screen
     document.body.style.paddingBottom = "0";
     $("thanks").style.display = "block";
     $("thanks").focus({ preventScroll: true });
@@ -991,6 +993,7 @@ const INSTAGRAM_URL = "";
     $("extras").style.display = "";
     $("faq").style.display = "";
     $("pricebar").style.display = "";
+    document.querySelector(".cbtn.book").style.display = "";
     document.body.style.paddingBottom = "";
     updatePrice();
     window.scrollTo({ top: 0 });
