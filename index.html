@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#7b4dff">
 <meta name="format-detection" content="telephone=no">
 <title>Order a Yard Sign | LawnBombs</title>
-<meta name="description" content="Book a LawnBombs celebration yard sign in Bonita Springs, Estero and Fort Myers (Lee County, FL). Set up the morning of your event and picked up the next day (2 days included, extra days +$10/day). $90, pay after it's up.">
+<meta name="description" content="Book a LawnBombs celebration yard sign in Bonita Springs, Estero and Fort Myers (Lee County, FL). Set up the morning of your event and picked up the next day (2 days included, extra days +$10/day). $90, pay after it's up. Book online or text 239-494-2377.">
 <link rel="canonical" href="https://lawnbombsfl.com/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%89%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
@@ -24,7 +24,7 @@
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "LawnBombs",
-  "description": "Personalized celebration yard signs, set up the morning of your event and picked up the next day (2 days included).",
+  "description": "Personalized celebration yard signs, set up the morning of your event and picked up the next day (2 days included). Book online or text 239-494-2377 (text only).",
   "url": "https://lawnbombsfl.com/",
   "image": "https://lawnbombsfl.com/photos/sign-5-hero.jpg",
   "telephone": "+1-239-494-2377",
@@ -163,12 +163,7 @@ const INSTAGRAM_URL = "";
   .tagline { margin: 10px auto 0; max-width: 28ch; font-size: 1.08rem; font-weight: 700; opacity: .97; }
 
   .contact { margin: 18px auto 0; max-width: 420px; }
-  .contact .num {
-    display: block; font-family: var(--display); font-weight: 700; font-size: 1.75rem; letter-spacing: .5px;
-    color: #fff; text-decoration: none; line-height: 1.1; margin-bottom: 10px;
-  }
-  .contact .num small { display: block; font-family: inherit; font-size: .8rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .9; }
-  .cbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cbtns { display: grid; grid-template-columns: 1fr; gap: 10px; }
   .cbtn {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     min-height: 54px; padding: 12px 10px; border-radius: 16px;
@@ -177,8 +172,11 @@ const INSTAGRAM_URL = "";
   }
   .cbtn:active { transform: translateY(2px); }
   .cbtn svg { width: 22px; height: 22px; flex: none; }
-  .cbtn.call { background: #fff; color: var(--purple); box-shadow: 0 6px 0 rgba(36,22,63,.2); }
   .cbtn.text { background: var(--yellow); color: var(--ink); box-shadow: 0 6px 0 rgba(36,22,63,.2); }
+  .cbtn.big { grid-column: 1 / -1; min-height: 62px; font-size: 1.35rem; font-weight: 700; letter-spacing: .3px; }
+  .cbtn.big svg { width: 26px; height: 26px; }
+  .phoneNum { white-space: nowrap; }
+  .textnote { margin: 0 0 10px; font-size: .95rem; font-weight: 700; opacity: .95; }
 
   /* ---------- Layout ---------- */
   main { max-width: 640px; margin: -96px auto 0; padding: 0 16px; position: relative; z-index: 1; }
@@ -336,9 +334,8 @@ const INSTAGRAM_URL = "";
   .summary div:last-child { border: 0; }
   .summary span:first-child { color: var(--muted); font-weight: 600; flex: none; }
   .summary span:last-child { font-weight: 700; text-align: right; overflow-wrap: anywhere; }
-  .tybtns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tybtns { display: grid; grid-template-columns: 1fr; gap: 10px; }
   .btn.share { margin-top: 14px; font-size: 1.05rem; min-height: 54px; padding: 12px; }
-  .tybtns .cbtn.call { background: var(--purple); color: #fff; box-shadow: 0 6px 0 rgba(36,22,63,.2); }
   .btn.ghost { background: #fff; color: var(--purple); border: 2px solid var(--purple); box-shadow: none; margin-top: 14px; font-size: 1.05rem; min-height: 54px; padding: 12px; }
   .demo { display: none; margin-top: 14px; font-size: .82rem; color: #7a4a00; background: #fff4d6; border-radius: 10px; padding: 8px 10px; }
 
@@ -393,15 +390,11 @@ const INSTAGRAM_URL = "";
   <p class="tagline">Celebration yard signs that make the whole street smile 🎉</p>
 
   <div class="contact">
-    <a class="num" id="heroNum" href="tel:+12394942377"><small>Call or text</small><span id="heroNumText">239-494-2377</span></a>
+    <p class="textnote">Questions? Text us anytime.</p>
     <div class="cbtns">
-      <a class="cbtn call" id="heroCall" href="tel:+12394942377" aria-label="Call LawnBombs at 239-494-2377">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
-        Call
-      </a>
-      <a class="cbtn text" id="heroText" href="sms:+12394942377" aria-label="Text LawnBombs at 239-494-2377">
+      <a class="cbtn text big" id="heroText" href="sms:+12394942377" aria-label="Text LawnBombs at 239-494-2377">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8l-4.6 3.7A.9.9 0 0 1 2 21V5a2 2 0 0 1 2-2zm3 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
-        Text
+        <span>Text <span class="phoneNum">239-494-2377</span></span>
       </a>
       <a class="cbtn book" href="#orderForm">Book online in 2 minutes &darr;</a>
     </div>
@@ -610,8 +603,7 @@ const INSTAGRAM_URL = "";
     <div class="summary" id="summary"></div>
     <p>Need it fast, or have a question?</p>
     <div class="tybtns">
-      <a class="cbtn call" id="tyCall" href="tel:+12394942377">Call</a>
-      <a class="cbtn text" id="tyText" href="sms:+12394942377">Text</a>
+      <a class="cbtn text big" id="tyText" href="sms:+12394942377" aria-label="Text LawnBombs at 239-494-2377"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8l-4.6 3.7A.9.9 0 0 1 2 21V5a2 2 0 0 1 2-2zm3 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg><span>Text <span class="phoneNum">239-494-2377</span></span></a>
     </div>
     <button type="button" class="btn share" id="shareBtn">Share LawnBombs with a friend 🎉</button>
     <button type="button" class="btn ghost" id="another">Order another sign</button>
@@ -621,7 +613,7 @@ const INSTAGRAM_URL = "";
 
 <footer>
   LawnBombs &middot; Bonita Springs, Estero &amp; Fort Myers<br>Lee&nbsp;County,&nbsp;FL &middot; 
-  Call <a id="footCall" href="tel:+12394942377">239-494-2377</a> or <a id="footText" href="sms:+12394942377">text us</a>
+  Text <a id="footText" href="sms:+12394942377">239-494-2377</a>
   <div class="social" id="social" hidden></div>
 </footer>
 
@@ -644,13 +636,11 @@ const INSTAGRAM_URL = "";
   if (!endpointSet) $("demoBar").style.display = "block";
 
   // ----- Phone links from config -----
-  document.querySelectorAll('a[href^="tel:"]').forEach(function (a) { a.href = "tel:" + PHONE_LINK; });
-  document.querySelectorAll('a[href^="sms:"]').forEach(function (a) { a.href = "sms:" + PHONE_LINK; });
-  $("heroNumText").textContent = PHONE_DISPLAY;
-  $("footCall").textContent = PHONE_DISPLAY;
-  ["heroCall", "heroText"].forEach(function (id) {
-    $(id).setAttribute("aria-label", (id === "heroCall" ? "Call" : "Text") + " LawnBombs at " + PHONE_DISPLAY);
-  });
+  // Text only (no phone calls): every contact link is sms:, and any stray tel: link becomes sms: too.
+  document.querySelectorAll('a[href^="sms:"], a[href^="tel:"]').forEach(function (a) { a.href = "sms:" + PHONE_LINK; });
+  document.querySelectorAll(".phoneNum").forEach(function (el) { el.textContent = PHONE_DISPLAY; });
+  $("footText").textContent = PHONE_DISPLAY;
+  ["heroText", "tyText"].forEach(function (id) { $(id).setAttribute("aria-label", "Text LawnBombs at " + PHONE_DISPLAY); });
   document.querySelector(".photo .from").textContent = "$" + PRICE_STANDARD + " · pay after";
 
   document.querySelectorAll(".smsLink").forEach(function (a) { a.href = "sms:" + PHONE_LINK; });
