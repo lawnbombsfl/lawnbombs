@@ -6,13 +6,13 @@
 <meta name="theme-color" content="#7b4dff">
 <meta name="format-detection" content="telephone=no">
 <title>Order a Yard Sign | LawnBombs</title>
-<meta name="description" content="Book a LawnBombs celebration yard sign in Bonita Springs, Estero and Fort Myers (Lee County, FL). Set up the morning of your event and picked up the next day (2 days included, extra days +$10/day). $90, pay after it's up. Book online or text 239-494-2377.">
+<meta name="description" content="Book a LawnBombs celebration yard sign in Bonita Springs, Estero and Fort Myers (Lee County, FL). We set it up the night before your event; $90 includes 2 days in the yard, +$10/day up to 5 days. Pay after it\'s up, no travel fee. Book online or text 239-494-2377.">
 <link rel="canonical" href="https://lawnbombsfl.com/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%89%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="LawnBombs">
 <meta property="og:title" content="LawnBombs: Celebration Yard Signs in Bonita Springs, Estero &amp; Fort Myers">
-<meta property="og:description" content="Personalized yard signs for birthdays, babies, grads and more. We set it up the morning of your event. $90 includes 2 days, pay after it's up.">
+<meta property="og:description" content="Personalized yard signs for birthdays, babies, grads and more. We set it up the night before your event. $90 includes 2 days in the yard, pay after it's up, no travel fee.">
 <meta property="og:url" content="https://lawnbombsfl.com/">
 <meta property="og:image" content="https://lawnbombsfl.com/photos/sign-5-hero.jpg">
 <meta property="og:image:width" content="980">
@@ -24,7 +24,7 @@
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "LawnBombs",
-  "description": "Personalized celebration yard signs, set up the morning of your event and picked up the next day (2 days included). Book online or text 239-494-2377 (text only).",
+  "description": "Personalized celebration yard signs, set up the night before your event. $90 includes 2 days in the yard, +$10/day up to 5 days, pay after it's up, no travel fee. Book online or text 239-494-2377 (text only).",
   "url": "https://lawnbombsfl.com/",
   "image": "https://lawnbombsfl.com/photos/sign-5-hero.jpg",
   "telephone": "+1-239-494-2377",
@@ -63,14 +63,50 @@ const PHONE_LINK     = "+12394942377";
 const MIN_DAYS_AHEAD = 1;
 
 // ----- Photo gallery -----
-// Drop more photos in the "photos" folder and add a line for each.
-// The gallery only shows up once there are at least 2 photos here.
+// Real past LawnBombs signs (plates, house numbers and faces blurred; first names only).
+// Files live in img/gallery/ (about 800px wide). The gallery shows once there are 2+ photos.
 const GALLERY = [
-  { src: "photos/sign-2.jpg", caption: "Welcome home, Baby Addison!" },
-  { src: "photos/sign-4.jpg", caption: "Happy 6th, Mateo! (soccer theme)" },
-  { src: "photos/sign-1.jpg", caption: "Happy 28th, Tony!" },
-  { src: "photos/sign-3.jpg", caption: "Congrats, Mr. & Mrs. Bailey!" },
+  { src: "img/gallery/grant.jpg", w: 800, h: 400, caption: "Happy 3rd, Grant! (Mickey & Buzz)" },
+  { src: "img/gallery/jonah.jpg", w: 800, h: 400, caption: "Happy birthday, Jonah! (glitter letters)" },
+  { src: "img/gallery/hudson.jpg", w: 800, h: 400, caption: "Welcome home, Hudson! (set up the night before)" },
+  { src: "img/gallery/addison.jpg", w: 800, h: 444, caption: "Welcome home, Baby Addison!" },
+  { src: "img/gallery/parker.jpg", w: 800, h: 400, caption: "Happy 6th, Parker! (sports theme)" },
+  { src: "img/gallery/mason.jpg", w: 800, h: 400, caption: "Happy 10th, Mason! (gamer theme)" },
+  { src: "img/gallery/mateo.jpg", w: 800, h: 370, caption: "Happy 6th, Mateo! (soccer theme)" },
+  { src: "img/gallery/tony.jpg", w: 800, h: 400, caption: "Happy 28th, Tony!" },
+  { src: "img/gallery/annette.jpg", w: 800, h: 400, caption: "Welcome, Annette!" },
 ];
+
+// ----- Pick your flair -----
+// Only pieces seen in real LawnBombs photos (tile images cropped from them, in img/flair/).
+const FLAIR = [
+  { key: "balloons",   label: "Balloons" },
+  { key: "stars",      label: "Stars" },
+  { key: "hearts",     label: "Hearts" },
+  { key: "number",     label: "Big age numbers" },
+  { key: "glitter",    label: "Glitter letters" },
+  { key: "cake",       label: "Birthday cake" },
+  { key: "cupcake",    label: "Cupcake" },
+  { key: "soccer",     label: "Soccer ball" },
+  { key: "football",   label: "Football" },
+  { key: "baseball",   label: "Baseball" },
+  { key: "controller", label: "Game controller" },
+  { key: "truck",      label: "Monster truck" },
+  { key: "mickey",     label: "Mickey Mouse" },
+  { key: "buzz",       label: "Buzz Lightyear" },
+  { key: "pirate",     label: "Pirate" },
+  { key: "shark",      label: "Sharks" },
+  { key: "dog",        label: "Puppy with bone" },
+  { key: "poop",       label: "Poop emoji" },
+  { key: "beer",       label: "Beer mug" },
+  { key: "tropical",   label: "Tropical flowers & pineapple" },
+  { key: "bottle",     label: "Baby bottle" },
+  { key: "feet",       label: "Baby feet" },
+  { key: "duck",       label: "Rubber duck" },
+  { key: "stroller",   label: "Baby stroller" },
+];
+// PREVIEW ONLY: shows "Preview: flair list pending Gavin's OK" above the tiles. Set to false (or delete) before publishing.
+const FLAIR_PREVIEW_NOTE = true;
 
 // ----- Customer reviews -----
 // Paste real reviews here (with permission). Hidden while empty.
@@ -229,7 +265,7 @@ const INSTAGRAM_URL = "";
   .field { margin-bottom: 16px; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   @media (max-width: 520px) { .row { grid-template-columns: 1fr; gap: 0; } }
-  label, legend { display: block; font-weight: 700; font-size: .98rem; margin-bottom: 6px; padding: 0; }
+  label, legend, .label { display: block; font-weight: 700; font-size: .98rem; margin-bottom: 6px; padding: 0; }
   .opt { font-weight: 600; color: var(--muted); font-size: .85rem; }
   .req { color: var(--pink); }
   input[type=text], input[type=tel], input[type=email], input[type=date], select, textarea {
@@ -323,7 +359,7 @@ const INSTAGRAM_URL = "";
 
   /* ---------- Thank you ---------- */
   #thanks { display: none; text-align: center; padding: 34px 20px; }
-  #thanks .big { font-size: 3.4rem; line-height: 1; }
+  #thanks .big:not(.cbtn) { font-size: 3.4rem; line-height: 1; }   /* the 🎉, not the big Text button */
   #thanks h2 { display: block; font-size: 1.9rem; margin: 12px 0 8px; }
   #thanks p { color: var(--muted); margin: 0 auto 12px; max-width: 34ch; }
   .summary {
@@ -349,7 +385,23 @@ const INSTAGRAM_URL = "";
     flex: 0 0 88%; max-width: 440px; margin: 0; scroll-snap-align: center;
     background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 6px 18px rgba(36,22,63,.1);
   }
-  .gallery img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .gallery figure { align-self: flex-start; }
+  .gallery button { display: block; width: 100%; padding: 0; border: 0; background: #e9e4f5; cursor: zoom-in; }
+  .gallery img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; object-fit: cover; }
+  .galsub { margin: -6px 0 10px; color: var(--muted); font-size: .92rem; }
+  .lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(20,12,40,.92); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 100%; max-height: 78vh; border-radius: 12px; }
+  .lightbox p { color: #fff; font-weight: 700; margin: 12px 0 0; text-align: center; }
+  .lightbox .lbclose { position: absolute; top: 10px; right: 10px; min-width: 48px; min-height: 48px; border: 0; border-radius: 50%; background: #fff; color: var(--ink); font-size: 1.6rem; font-weight: 700; cursor: pointer; }
+  .flairgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+  .flair { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 4px 8px; min-height: 44px;
+    border: 2px solid var(--line); border-radius: 14px; background: #fff; font: inherit; font-size: .8rem; font-weight: 700; color: var(--ink); line-height: 1.15; cursor: pointer; }
+  .flair img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 10px; }
+  .flair[aria-pressed="true"] { border-color: var(--purple); background: #f1ebff; box-shadow: 0 0 0 2px var(--purple) inset; }
+  .flair[aria-pressed="true"]::after { content: "\2713"; position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border-radius: 50%; background: var(--purple); color: #fff; font-size: .9rem; line-height: 24px; text-align: center; }
+  .flairnote { margin: 6px 0 0; padding: 6px 10px; border-radius: 10px; background: #fff4c7; color: #6b4e00; font-size: .82rem; font-weight: 700; }
+  .flaircount { margin-top: 8px; font-size: .88rem; font-weight: 700; color: var(--purple); min-height: 1.2em; }
   .gallery figcaption { padding: 8px 12px; font-size: .9rem; font-weight: 700; }
   .reviews { display: grid; gap: 10px; margin-bottom: 18px; }
   .review { background: var(--card); border-radius: 16px; padding: 14px 16px; box-shadow: 0 6px 18px rgba(36,22,63,.07); }
@@ -408,14 +460,15 @@ const INSTAGRAM_URL = "";
   </figure>
 
   <div class="perks" id="perks">
-    <div class="perk"><b>Morning of</b>We set it up</div>
+    <div class="perk"><b>Night before</b>We set it up</div>
     <div class="perk"><b>Personalized</b>Name, colors, theme</div>
     <div class="perk"><b>Pay after</b>Once it's up</div>
   </div>
 
   <div id="extras">
     <section id="gallerySec" hidden>
-      <h2 class="section-title">More of our signs</h2>
+      <h2 class="section-title">See our signs</h2>
+      <p class="sub galsub">Real LawnBombs setups around Lee County. Tap a photo to see it bigger.</p>
       <div class="gallery" id="gallery"></div>
     </section>
     <section id="reviewSec" hidden>
@@ -483,7 +536,7 @@ const INSTAGRAM_URL = "";
       <div class="field">
         <label for="celebrationDate">Date of celebration <span class="req" aria-hidden="true">*</span></label>
         <input type="date" id="celebrationDate" name="celebrationDate" required aria-describedby="err-celebrationDate hint-date">
-        <div class="hint" id="hint-date">We set it up the morning of your event.</div>
+        <div class="hint" id="hint-date">We set it up the night before your event, so it's ready when you wake up.</div>
         <div class="err" id="err-celebrationDate" aria-live="polite"></div>
       </div>
 
@@ -495,7 +548,7 @@ const INSTAGRAM_URL = "";
           <option value="4">4 days (+$20)</option>
           <option value="5">5 days (+$30)</option>
         </select>
-        <div class="hint" id="hint-days">$90 includes 2 days in the yard (your event day and the next day). Extra days are +$10/day, up to 5 days.</div>
+        <div class="hint" id="hint-days">$90 includes 2 days in the yard (your event day and the next day). Extra days are +$10/day, up to 5 days. No travel fee.</div>
         <div class="hint" id="hint-pickup" aria-live="polite">We pick it up the next day. Total: <b id="inlineTotal">$90</b></div>
       </div>
 
@@ -510,7 +563,7 @@ const INSTAGRAM_URL = "";
     <!-- 3 -->
     <section class="card s3">
       <h2><span class="step">3</span>Make it theirs</h2>
-      <p class="sub">Tell us what they love and we'll pick the flair.</p>
+      <p class="sub">Tell us what they love, and pick flair below if you like.</p>
 
       <div class="field">
         <label for="colors">Colors <span class="req" aria-hidden="true">*</span></label>
@@ -520,6 +573,13 @@ const INSTAGRAM_URL = "";
       <div class="field">
         <label for="theme">Theme or interests <span class="opt">(optional)</span></label>
         <input type="text" id="theme" name="theme" placeholder="e.g. unicorns, soccer, golf, dinosaurs">
+      </div>
+      <div class="field" id="flairField">
+        <span class="label" id="flairLabel">Pick your flair <span class="opt">(optional)</span></span>
+        <div class="hint" style="margin-top:0">Tap any extras you'd like. These are real pieces from our signs, and we'll match them to your colors.</div>
+        <div class="flairnote" id="flairNote" hidden>Preview: flair list pending Gavin's OK</div>
+        <div class="flairgrid" id="flairGrid" role="group" aria-labelledby="flairLabel"></div>
+        <div class="flaircount" id="flairCount" aria-live="polite"></div>
       </div>
       <div class="field" style="margin-bottom:0">
         <label for="notes">Notes <span class="opt">(optional)</span></label>
@@ -566,7 +626,7 @@ const INSTAGRAM_URL = "";
     <h2 class="section-title">Questions</h2>
     <details>
       <summary>When do you set up and pick up?</summary>
-      <p>We set the sign up the morning of your event. $90 includes 2 days in the yard (your event day and the next day), and we pick it up the next day. Want it up longer? Extra days are +$10/day, up to 5 days total, and we pick it up after your last day. You don't need to be home.</p>
+      <p>We set the sign up the night before your event, so it's there when you wake up. $90 includes 2 days in the yard (your event day and the next day), and we pick it up the next day. You pay after it's up, and there's no travel fee. Want it up longer? Extra days are +$10/day, up to 5 days total, and we pick it up after your last day. You don't need to be home.</p>
     </details>
     <details>
       <summary>How far ahead should I book?</summary>
@@ -586,7 +646,7 @@ const INSTAGRAM_URL = "";
     </details>
     <details>
       <summary>Can it be a surprise?</summary>
-      <p>Absolutely. We set up the morning of your event. Add "it's a surprise" in the notes (plus when they usually wake up or leave the house) and we'll time it as best we can and only contact you.</p>
+      <p>Absolutely. We set it up the night before your event, so it's waiting when they wake up. Add "it's a surprise" in the notes (plus when they usually wake up or leave the house) and we'll time it as best we can and only contact you.</p>
     </details>
     <details>
       <!-- REVIEW THIS: change to match your real weather policy -->
@@ -627,6 +687,12 @@ const INSTAGRAM_URL = "";
   </div>
 </div>
 
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Sign photo" aria-hidden="true">
+  <button type="button" class="lbclose" id="lbClose" aria-label="Close photo">&times;</button>
+  <img id="lbImg" alt="">
+  <p id="lbCap"></p>
+</div>
+
 <script>
 (function () {
   var form = document.getElementById("orderForm");
@@ -648,14 +714,52 @@ const INSTAGRAM_URL = "";
   // ----- Gallery, reviews, social (from config) -----
   if (GALLERY.length > 1) {
     GALLERY.forEach(function (g) {
-      var fig = document.createElement("figure"), img = document.createElement("img"), cap = document.createElement("figcaption");
-      img.src = g.src; img.alt = "LawnBombs sign: " + (g.caption || "celebration yard sign"); img.loading = "lazy";
+      var fig = document.createElement("figure"), btn = document.createElement("button"), img = document.createElement("img"), cap = document.createElement("figcaption");
+      img.src = g.src; img.alt = "LawnBombs sign: " + (g.caption || "celebration yard sign"); img.loading = "lazy"; img.decoding = "async";
+      if (g.w) { img.width = g.w; img.height = g.h; }
+      btn.type = "button"; btn.setAttribute("aria-label", "See bigger: " + (g.caption || "LawnBombs sign"));
+      btn.addEventListener("click", function () { openLightbox(g); });
       cap.textContent = g.caption || "";
-      fig.appendChild(img); if (g.caption) fig.appendChild(cap);
+      btn.appendChild(img); fig.appendChild(btn); if (g.caption) fig.appendChild(cap);
       $("gallery").appendChild(fig);
     });
     $("gallerySec").hidden = false;
   }
+  // Lightbox (tap a gallery photo)
+  var lb = $("lightbox"), lbImg = $("lbImg"), lastFocus = null;
+  function openLightbox(g) {
+    lastFocus = document.activeElement;
+    lbImg.src = g.src; lbImg.alt = "LawnBombs sign: " + (g.caption || ""); $("lbCap").textContent = g.caption || "";
+    lb.classList.add("open"); lb.setAttribute("aria-hidden", "false"); $("lbClose").focus();
+  }
+  function closeLightbox() {
+    lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true");
+    if (lastFocus) lastFocus.focus({ preventScroll: true });
+  }
+  $("lbClose").addEventListener("click", closeLightbox);
+  lb.addEventListener("click", function (e) { if (e.target === lb || e.target === lbImg) closeLightbox(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && lb.classList.contains("open")) closeLightbox(); });
+
+  // Pick your flair tiles (multi-select)
+  FLAIR.forEach(function (f) {
+    var b = document.createElement("button"), im = document.createElement("img"), s = document.createElement("span");
+    b.type = "button"; b.className = "flair"; b.setAttribute("aria-pressed", "false"); b.dataset.label = f.label;
+    im.src = "img/flair/" + f.key + ".jpg"; im.alt = ""; im.loading = "lazy"; im.decoding = "async"; im.width = 240; im.height = 240;
+    s.textContent = f.label;
+    b.appendChild(im); b.appendChild(s);
+    b.addEventListener("click", function () {
+      b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      var n = selectedFlair().length;
+      $("flairCount").textContent = n ? n + " picked: " + selectedFlair().join(", ") : "";
+    });
+    $("flairGrid").appendChild(b);
+  });
+  if (!FLAIR.length) $("flairField").style.display = "none";
+  if (FLAIR_PREVIEW_NOTE) $("flairNote").hidden = false;
+  function selectedFlair() {
+    return [].map.call(document.querySelectorAll('.flair[aria-pressed="true"]'), function (b) { return b.dataset.label; });
+  }
+
   REVIEWS.forEach(function (r) {
     var box = document.createElement("div"), stars = document.createElement("div"), p = document.createElement("p"), who = document.createElement("div");
     box.className = "review"; stars.className = "stars"; who.className = "who";
@@ -741,9 +845,16 @@ const INSTAGRAM_URL = "";
     d.setDate(d.getDate() + currentDays() - 1);
     return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   }
+  // Setup = the night before the celebration date.
+  function setupISO() {
+    var v = $("celebrationDate").value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return "";
+    var p = v.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2] - 1);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
   function pickupText() {
     var iso = pickupISO(), after = currentDays() - 1;
-    if (iso) return "Set up the morning of " + prettyDate($("celebrationDate").value) + ", picked up " + prettyDate(iso) + ".";
+    if (iso) return "Set up the night before (" + prettyDate(setupISO()) + "), picked up " + prettyDate(iso) + ".";
     return "We pick it up " + (after === 1 ? "the next day" : after + " days after your event") + ".";
   }
   function updatePrice() {
@@ -888,10 +999,13 @@ const INSTAGRAM_URL = "";
       extraDays: extraDays(),               // 0-3 extra days at $10/day
       total: currentPrice(),                // $90 + $10 per extra day
       pickupDate: pickupISO(),
+      setupDate: setupISO(),                // the night before the celebration
+      flair: selectedFlair().join(", "),    // picked flair tiles (also at the top of Notes)
       customerNotes: $("notes").value.trim(),
       // The Apps Script only saves known fields, so the yard time + total also ride
       // along at the top of Notes (shows in the sheet and the email without a redeploy).
-      notes: "Yard time: " + daysLabel() + " | Total: $" + currentPrice() +
+      notes: (selectedFlair().length ? "Flair: " + selectedFlair().join(", ") + " | " : "") +
+             "Yard time: " + daysLabel() + " | Total: $" + currentPrice() +
              (pickupISO() ? " | Pickup: " + prettyDate(pickupISO()) : "") +
              ($("notes").value.trim() ? "\n" + $("notes").value.trim() : ""),
       heardFrom: $("heardFrom").value,
@@ -944,10 +1058,11 @@ const INSTAGRAM_URL = "";
       ["Date", prettyDate(d.celebrationDate)],
       ["Address", d.address],
       ["Phone", d.phone],
-      ["Setup", "Morning of " + prettyDate(d.celebrationDate)],
+      ["Setup", "Night before (" + prettyDate(d.setupDate) + ")"],
       ["Sign up for", d.yardDays + " days" + (d.pickupDate ? " (pickup " + prettyDate(d.pickupDate) + ")" : "")],
       ["Total", "$" + d.total]
     ];
+    if (d.flair) rows.splice(rows.length - 1, 0, ["Flair", d.flair]);
     var box = $("summary");
     box.textContent = "";
     rows.forEach(function (r) {
@@ -970,6 +1085,8 @@ const INSTAGRAM_URL = "";
 
   $("another").addEventListener("click", function () {
     form.reset();
+    document.querySelectorAll(".flair").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+    $("flairCount").textContent = "";
     form.querySelectorAll(".invalid, .valid").forEach(function (el) { el.classList.remove("invalid", "valid"); });
     form.querySelectorAll(".err").forEach(function (el) { el.classList.remove("show"); el.textContent = ""; });
     sending = false;
