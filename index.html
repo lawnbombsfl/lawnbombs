@@ -69,7 +69,6 @@ const GALLERY = [
   { src: "photos/sign-2.jpg", caption: "Welcome home, Baby Addison!" },
   { src: "photos/sign-4.jpg", caption: "Happy 6th, Mateo! (soccer theme)" },
   { src: "photos/sign-1.jpg", caption: "Happy 28th, Tony!" },
-  { src: "photos/sign-3.jpg", caption: "Congrats, Mr. & Mrs. Bailey!" },
 ];
 
 // ----- Customer reviews -----
@@ -323,7 +322,7 @@ const INSTAGRAM_URL = "";
 
   /* ---------- Thank you ---------- */
   #thanks { display: none; text-align: center; padding: 34px 20px; }
-  #thanks .big { font-size: 3.4rem; line-height: 1; }
+  #thanks .big:not(.cbtn) { font-size: 3.4rem; line-height: 1; }   /* the 🎉, not the big Text button */
   #thanks h2 { display: block; font-size: 1.9rem; margin: 12px 0 8px; }
   #thanks p { color: var(--muted); margin: 0 auto 12px; max-width: 34ch; }
   .summary {
