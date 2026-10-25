@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#7b4dff">
 <meta name="format-detection" content="telephone=no">
 <title>LawnBombs | Celebration Yard Signs in Estero, Bonita Springs &amp; Fort Myers</title>
-<meta name="description" content="Personalized celebration yard signs in Lee County, FL. $90 flat with 2 days in the yard, extra days +$10/day up to 5 days. We set it up the night before, you pay after it's up. No travel fee except Lehigh Acres (+$15). Text 239-494-2377 or book online.">
+<meta name="description" content="Personalized celebration yard signs in Lee County, FL. $90 flat with 2 days in the yard, extra days +$10/day up to 5 days. We set it up the night before, you pay after it's up. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20). Text 239-494-2377 or book online.">
 <link rel="canonical" href="https://lawnbombsfl.com/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%89%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="assets/fonts/fredoka-700.woff2" as="font" type="font/woff2" crossorigin>
@@ -14,7 +14,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="LawnBombs">
 <meta property="og:title" content="LawnBombs: Celebration Yard Signs in Bonita Springs, Estero &amp; Fort Myers">
-<meta property="og:description" content="Personalized yard signs for birthdays, babies, grads and more. $90 flat, 2 days in the yard. We set it up the night before, pay after it's up. No travel fee except Lehigh Acres (+$15).">
+<meta property="og:description" content="Personalized yard signs for birthdays, babies, grads and more. $90 flat, 2 days in the yard. We set it up the night before, pay after it's up. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).">
 <meta property="og:url" content="https://lawnbombsfl.com/">
 <meta property="og:image" content="https://lawnbombsfl.com/photos/sign-5-hero.jpg">
 <meta property="og:image:width" content="980">
@@ -26,7 +26,7 @@
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "LawnBombs",
-  "description": "Personalized celebration yard signs, set up the night before your event. $90 includes 2 days in the yard, +$10/day up to 5 days, pay after it's up. No travel fee except Lehigh Acres (+$15). Text 239-494-2377 (text only) or book online.",
+  "description": "Personalized celebration yard signs, set up the night before your event. $90 includes 2 days in the yard, +$10/day up to 5 days, pay after it's up. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20). Text 239-494-2377 (text only) or book online.",
   "url": "https://lawnbombsfl.com/",
   "image": "https://lawnbombsfl.com/photos/sign-5-hero.jpg",
   "telephone": "+1-239-494-2377",
@@ -42,7 +42,9 @@
     { "@type": "Place", "name": "San Carlos Park, FL" },
     { "@type": "Place", "name": "Three Oaks, FL" },
     { "@type": "Place", "name": "Gateway, FL" },
-    { "@type": "Place", "name": "Lehigh Acres, FL" }
+    { "@type": "Place", "name": "Lehigh Acres, FL" },
+    { "@type": "City", "name": "Naples, FL" },
+    { "@type": "City", "name": "Fort Myers Beach, FL" }
   ]
 }
 </script>
@@ -66,7 +68,7 @@ const PHONE_DISPLAY   = "239-494-2377";
 const PHONE_LINK      = "+12394942377";   // used for sms: links only (text only)
 
 // Travel fees by town (everything not listed here is $0). Town list lives in the order form's Town dropdown.
-const TRAVEL_FEES = { "Lehigh Acres": 15 };
+const TRAVEL_FEES = { "Lehigh Acres": 15, "Naples": 20, "Fort Myers Beach": 20 };
 
 // How many days ahead someone must book online. 1 = tomorrow at the earliest.
 const MIN_DAYS_AHEAD = 1;
@@ -372,14 +374,14 @@ const INSTAGRAM_URL = "";
 <header class="hero" id="home">
   <div class="wrap">
     <div>
-      <span class="badge">Estero &middot; Bonita Springs &middot; Fort Myers &middot; San Carlos Park &middot; Three Oaks &middot; Gateway &middot; Lehigh Acres</span>
+      <span class="badge">Estero &middot; Bonita Springs &middot; Fort Myers &middot; San Carlos Park &middot; Three Oaks &middot; Gateway &middot; Lehigh Acres &middot; Naples &middot; Fort Myers Beach</span>
       <h1>Yard signs that make the <em>whole street</em> smile</h1>
       <div class="priceTag"><b>$90 flat</b><span>2 days in the yard</span></div>
       <div class="heroCtas">
         <a class="bigbtn text" href="sms:+12394942377" aria-label="Text LawnBombs at 239-494-2377"><svg><use href="#i-sms"/></svg><span>Text 239-494-2377</span></a>
         <a class="bigbtn ghost" href="#order">Book online in 2 minutes</a>
       </div>
-      <p class="heroNote"><span class="nw">Set up the night before</span> &middot; <span class="nw">Pay after it's up</span> &middot; <span class="nw">No travel fee except Lehigh Acres (+$15)</span></p>
+      <p class="heroNote"><span class="nw">Set up the night before</span> &middot; <span class="nw">Pay after it's up</span> &middot; <span class="nw">No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20)</span></p>
     </div>
     <figure class="heroPhoto">
       <img src="img/gallery/eliana.jpg" width="800" height="447" fetchpriority="high" alt="A real LawnBombs sign on a front lawn: pink, black and purple letters spelling Happy 10th Birthday, with cupcake, balloon, star and heart cutouts">
@@ -394,7 +396,7 @@ const INSTAGRAM_URL = "";
       <div class="steps">
         <div class="stepcard"><span class="n">1</span><div><b>Book or text</b><p>Tell us the name, date, colors and flair. Takes 2 minutes.</p></div></div>
         <div class="stepcard"><span class="n">2</span><div><b>We set it up the night before</b><p>It's waiting when they wake up. You don't need to be home.</p></div></div>
-        <div class="stepcard"><span class="n">3</span><div><b>Pay after it's up</b><p>Cash, Zelle or Venmo. No deposit. No travel fee except Lehigh Acres (+$15).</p></div></div>
+        <div class="stepcard"><span class="n">3</span><div><b>Pay after it's up</b><p>Cash, Zelle or Venmo. No deposit. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).</p></div></div>
       </div>
     </div>
   </section>
@@ -422,7 +424,7 @@ const INSTAGRAM_URL = "";
             <li>2 days in the yard</li>
             <li>Setup the night before, and pickup</li>
             <li>Pay after it's up</li>
-            <li>No travel fee except Lehigh Acres (+$15)</li>
+            <li>No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20)</li>
           </ul>
         </div>
         <div class="pricecard" style="border-color:var(--line)">
@@ -512,7 +514,7 @@ const INSTAGRAM_URL = "";
                 <option value="4">4 days (+$20) &middot; $110</option>
                 <option value="5">5 days (+$30) &middot; $120</option>
               </select>
-              <div class="hint" id="hint-days">$90 includes 2 days in the yard (your event day and the next day). Extra days are +$10/day, up to 5 days. No travel fee except Lehigh Acres (+$15).</div>
+              <div class="hint" id="hint-days">$90 includes 2 days in the yard (your event day and the next day). Extra days are +$10/day, up to 5 days. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).</div>
               <div class="hint" id="hint-pickup" aria-live="polite">We pick it up the next day.</div>
             </div>
             <div class="field" style="margin-bottom:0">
@@ -532,10 +534,12 @@ const INSTAGRAM_URL = "";
                 <option>Three Oaks</option>
                 <option>Gateway</option>
                 <option value="Lehigh Acres">Lehigh Acres (+$15 travel)</option>
+                <option value="Naples">Naples (+$20 travel)</option>
+                <option value="Fort Myers Beach">Fort Myers Beach (+$20 travel)</option>
                 <option value="Cape Coral" disabled>Cape Coral (coming December)</option>
                 <option value="Other">Other (text us)</option>
               </select>
-              <div class="hint" id="hint-town">No travel fee except Lehigh Acres (+$15). Not serving Naples or Fort Myers Beach.</div>
+              <div class="hint" id="hint-town">No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).</div>
               <div class="err" id="err-town" aria-live="polite"></div>
             </div>
           </section>
@@ -628,11 +632,11 @@ const INSTAGRAM_URL = "";
       <div class="faq" style="margin-top:14px">
         <details open>
           <summary>What's included in the $90?</summary>
-          <p>Everything: a personalized sign with the name, age, colors and theme you want, all the flair you pick, setup the night before, 2 days in the yard, and pickup. Same price for every sign type. No travel fee except Lehigh Acres (+$15).</p>
+          <p>Everything: a personalized sign with the name, age, colors and theme you want, all the flair you pick, setup the night before, 2 days in the yard, and pickup. Same price for every sign type. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).</p>
         </details>
         <details>
           <summary>Can I keep it up longer?</summary>
-          <p>Yes. Extra days are +$10/day, up to 5 days total: 3 days is $100, 4 days is $110, 5 days is $120. In Lehigh Acres add the $15 travel fee ($105, $115, $125, $135 for 2 to 5 days). We pick it up after your last day.</p>
+          <p>Yes. Extra days are +$10/day, up to 5 days total: 3 days is $100, 4 days is $110, 5 days is $120. In Lehigh Acres add the $15 travel fee ($105, $115, $125, $135 for 2 to 5 days). In Naples or Fort Myers Beach add the $20 travel fee ($110, $120, $130, $140 for 2 to 5 days). We pick it up after your last day.</p>
         </details>
         <details>
           <summary>When do you set up and pick up?</summary>
@@ -640,7 +644,7 @@ const INSTAGRAM_URL = "";
         </details>
         <details>
           <summary>How do I pay?</summary>
-          <p>Nothing up front. You pay after it's up, by cash, Zelle or Venmo. No deposit. No travel fee except Lehigh Acres (+$15).</p>
+          <p>Nothing up front. You pay after it's up, by cash, Zelle or Venmo. No deposit. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).</p>
         </details>
         <details>
           <summary>How much flair can I pick?</summary>
@@ -648,7 +652,7 @@ const INSTAGRAM_URL = "";
         </details>
         <details>
           <summary>What areas do you cover?</summary>
-          <p>Estero, Bonita Springs, Fort Myers, San Carlos Park, Three Oaks and Gateway, with no travel fee. Lehigh Acres is +$15 travel. Cape Coral is coming in December (not bookable yet). We don't serve Naples or Fort Myers Beach. Somewhere else nearby? <a class="smsLink" href="sms:+12394942377">Text us</a> and ask.</p>
+          <p>Estero, Bonita Springs, Fort Myers, San Carlos Park, Three Oaks and Gateway, with no travel fee. Lehigh Acres is +$15 travel, and Naples and Fort Myers Beach are +$20 travel. Cape Coral is coming in December (not bookable yet). Somewhere else nearby? <a class="smsLink" href="sms:+12394942377">Text us</a> and ask.</p>
         </details>
         <details>
           <summary>How do I reach you?</summary>
@@ -678,8 +682,8 @@ const INSTAGRAM_URL = "";
 <footer>
   <div class="wrap">
     <p class="brand">Lawn<span>Bombs</span></p>
-    <p>Celebration yard signs &middot; Lee County, FL<br>Estero &middot; Bonita Springs &middot; Fort Myers &middot; San Carlos Park &middot; Three Oaks &middot; Gateway &middot; Lehigh Acres</p>
-    <p>No travel fee except Lehigh Acres (+$15) &middot; Cape Coral coming in December</p>
+    <p>Celebration yard signs &middot; Lee County, FL<br>Estero &middot; Bonita Springs &middot; Fort Myers &middot; San Carlos Park &middot; Three Oaks &middot; Gateway &middot; Lehigh Acres &middot; Naples &middot; Fort Myers Beach</p>
+    <p>No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20) &middot; Cape Coral coming in December</p>
     <a class="bigbtn text" href="sms:+12394942377" aria-label="Text LawnBombs at 239-494-2377"><svg><use href="#i-sms"/></svg><span>Text 239-494-2377</span></a>
     <p>Text <a id="footText" class="smsLink" href="sms:+12394942377">239-494-2377</a> &middot; $90 flat, 2 days in the yard</p>
     <div class="social" id="social" hidden></div>
@@ -850,7 +854,7 @@ const INSTAGRAM_URL = "";
   function currentTown() { return $("town").value || ""; }
   function travelFee() { return TRAVEL_FEES[currentTown()] || 0; }
   function basePrice(days) { return PRICE_STANDARD + (days - INCLUDED_DAYS) * EXTRA_DAY_PRICE; }
-  function currentPrice() { return basePrice(currentDays()) + travelFee(); }   // includes the Lehigh Acres travel fee
+  function currentPrice() { return basePrice(currentDays()) + travelFee(); }   // includes the town travel fee (Lehigh Acres $15, Naples / Fort Myers Beach $20)
   function daysLabel() { var x = extraDays(); return currentDays() + " days" + (x ? " (+$" + x * EXTRA_DAY_PRICE + ")" : " (included)"); }
   function pickupISO() { return shiftISO($("celebrationDate").value, currentDays() - 1); }   // 2 days -> picked up the next day
   function setupISO() { return shiftISO($("celebrationDate").value, -1); }                   // the night before
@@ -992,8 +996,8 @@ const INSTAGRAM_URL = "";
       website: $("website").value,
       pageUrl: location.href,
       submittedAtLocal: new Date().toString(),
-      town: currentTown(),                  // new: Estero, ..., Lehigh Acres, Other
-      travelFee: travelFee()                // new: 15 for Lehigh Acres, else 0 (already inside price/total)
+      town: currentTown(),                  // new: Estero, ..., Lehigh Acres, Naples, Fort Myers Beach, Other
+      travelFee: travelFee()                // new: 15 Lehigh Acres, 20 Naples / Fort Myers Beach, else 0 (already inside price/total)
     };
     window.LB_LAST_ORDER = data;
     var btn = $("submitBtn");
