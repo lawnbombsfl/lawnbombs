@@ -107,7 +107,7 @@
   <section class="section section--teal" id="flair" aria-labelledby="flair-title">
     <div class="section__inner">
       <h2 id="flair-title" class="section__title">Flair? All included.</h2>
-      <p class="section__sub">Pick as many pieces as you want from <strong id="flair-total-count">148</strong> options — characters, sports, babies, over-the-hill signs and more. Every piece is included in the $90.</p>
+      <p class="section__sub">Pick up to 5 pieces from <strong id="flair-total-count">148</strong> options — characters, sports, babies, over-the-hill signs and more. Every piece is included in the $90.</p>
       <ul class="teaser-grid">
         <li class="teaser-card"><img src="img/flair-clean/super-mario-set.jpg" width="600" height="600" loading="lazy" alt="Super Mario flair"><span>Super Mario</span></li>
         <li class="teaser-card"><img src="img/flair-clean/baby-boy-set.jpg" width="600" height="600" loading="lazy" alt="Blue baby boy set flair"><span>Blue baby boy set</span></li>
@@ -132,7 +132,7 @@
         <article class="price-card"><span class="price-card__days">4 days</span><span class="price-card__amt">$110</span></article>
         <article class="price-card"><span class="price-card__days">5 days</span><span class="price-card__amt">$120</span></article>
       </div>
-      <p class="price-note">Every sign includes unlimited flair, setup the night before, and pickup after. Pay after it's up.</p>
+      <p class="price-note">Every sign includes up to 5 flair pieces, setup the night before, and pickup after. Pay after it's up.</p>
       <div class="towns-chips" id="towns-chips" aria-label="Service towns"></div>
       <p class="price-note price-note--strong" id="travel-note"></p>
       <p class="teaser-cta"><button type="button" class="btn btn--primary btn--big" data-open-wizard>Order Your Sign</button></p>
@@ -170,7 +170,7 @@
       <div class="faq-list">
         <details class="faq-item">
           <summary>What's included in the $90?</summary>
-          <p>Your custom yard greeting sign plus any flair pieces you want — characters, sports, numbers, you name it. All flair is included at no extra cost, for any number of pieces.</p>
+          <p>Your custom yard greeting sign plus up to 5 flair pieces — characters, sports, numbers, you name it. All flair is included at no extra cost.</p>
         </details>
         <details class="faq-item">
           <summary>How many days do I get?</summary>
@@ -190,7 +190,7 @@
         </details>
         <details class="faq-item">
           <summary>Can I pick more than one flair piece?</summary>
-          <p>Yes! Pick as many as you like — there's no limit, and every piece is included in your $90.</p>
+          <p>Yes! Pick up to 5 pieces, and every one is included in your $90.</p>
         </details>
         <details class="faq-item">
           <summary>How do I reach you?</summary>
@@ -269,7 +269,7 @@
         <section class="wizard-step" data-step="2">
           <div class="flair-sticky-head">
             <h2 class="step-heading">Pick your flair</h2>
-            <p class="flair-count" id="flair-count">0 picked — all included</p>
+            <p class="flair-count" id="flair-count" aria-live="polite">0 of 5 picked — all included</p>
             <div class="flair-search" role="search">
               <label for="flair-search" class="flair-search__label">Search flair</label>
               <div class="flair-search__box">
@@ -378,7 +378,9 @@
         <div class="totalbar-amount">
           <span class="totalbar-label">Total</span>
           <span class="totalbar-value" id="total">$90</span>
+          <span class="totalbar-flair" id="totalbar-flair">0 of 5 flair</span>
         </div>
+        <p class="flair-limit-toast" id="flair-limit-msg" role="status" aria-live="polite" hidden>That's 5, the max. Tap one to swap it out.</p>
         <div class="totalbar-actions">
           <button type="button" class="btn" id="wizard-back">Back</button>
           <button type="button" class="btn btn--primary" id="wizard-next">Next</button>

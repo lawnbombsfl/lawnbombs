@@ -7,7 +7,10 @@
   var BASE_DAYS = 2;
   var EXTRA_DAY_FEE = 10;
   var MAX_DAYS = 5;
+  var MAX_FLAIR = 5;   // flair pieces per sign (all included, price never changes)
 
+  // Picked flair ids, in the order they were picked. This Set is the single source of truth:
+  // the count, Review step and order payload all read from it (never from the DOM).
   var selectedFlair = new Set();
   var currentStep = 1;
   var TOTAL_STEPS = 5;
@@ -247,10 +250,16 @@
       card.appendChild(name);
 
       card.addEventListener("click", function () {
-        var pressed = card.getAttribute("aria-pressed") === "true";
-        card.setAttribute("aria-pressed", pressed ? "false" : "true");
-        if (pressed) selectedFlair.delete(item.id);
-        else selectedFlair.add(item.id);
+        if (selectedFlair.has(item.id)) {
+          selectedFlair.delete(item.id);
+          hideFlairLimit();
+        } else if (selectedFlair.size >= MAX_FLAIR) {
+          showFlairLimit(card);   // gentle block: don't select a 6th piece
+          return;
+        } else {
+          selectedFlair.add(item.id);
+        }
+        card.setAttribute("aria-pressed", selectedFlair.has(item.id) ? "true" : "false");
         updateFlairCount();
       });
 
@@ -260,7 +269,38 @@
 
   function updateFlairCount() {
     var n = selectedFlair.size;
-    $("#flair-count").textContent = n + (n === 1 ? " piece picked — all included" : " picked — all included");
+    $("#flair-count").textContent = n + " of " + MAX_FLAIR + " picked — all included";
+    var bar = $("#totalbar-flair");
+    if (bar) bar.textContent = n + " of " + MAX_FLAIR + " flair";
+    var grid = $("#flair-grid");
+    if (grid) grid.classList.toggle("is-maxed", n >= MAX_FLAIR);
+  }
+
+  var flairLimitTimer = null;
+  function showFlairLimit(card) {
+    var msg = $("#flair-limit-msg");
+    if (!msg) return;
+    msg.hidden = false;
+    clearTimeout(flairLimitTimer);
+    flairLimitTimer = setTimeout(hideFlairLimit, 4000);
+    if (card) {
+      card.classList.remove("is-nope");
+      void card.offsetWidth;   // restart the nudge animation
+      card.classList.add("is-nope");
+    }
+  }
+  function hideFlairLimit() {
+    clearTimeout(flairLimitTimer);
+    var msg = $("#flair-limit-msg");
+    if (msg) msg.hidden = true;
+  }
+
+  // Names of the picked flair, in pick order (read from the Set, not the DOM).
+  function pickedFlairNames() {
+    return Array.from(selectedFlair).map(function (id) {
+      var item = flairById[id];
+      return item ? item.name : id;
+    });
   }
 
   /* ============================================================
@@ -364,6 +404,9 @@
     $("#wizard-step-title").textContent = "Step " + step + " of " + TOTAL_STEPS + " — " + STEP_TITLES[step];
     $("#wizard-back").disabled = step === 1;
     $("#wizard-next").style.display = step === TOTAL_STEPS ? "none" : "";
+    var wbody = $(".wizard-body");
+    if (wbody) wbody.classList.toggle("is-flair-step", step === 2);
+    if (step !== 2) hideFlairLimit();
     if (step === TOTAL_STEPS) renderReview();
     var body = $(".wizard-body");
     if (body) body.scrollTop = 0;
@@ -399,10 +442,9 @@
     var mobile = $("#mobile").value.trim() || "—";
     var notes = $("#notes").value.trim();
 
-    var flairNames = Array.prototype.slice.call(selectedFlair).map(function (id) {
-      var item = FLAIR.filter(function (f) { return f.id === id; })[0];
-      return item ? item.name : id;
-    });
+    // Bug fix: this used Array.prototype.slice.call(selectedFlair), which always returns []
+    // for a Set (a Set has no length or index properties), so Review showed "Flair (0)".
+    var flairNames = pickedFlairNames();
 
     var rows = [
       ["Occasion", occasion],
@@ -421,7 +463,7 @@
     var html = rows.map(function (r) {
       return '<div class="review-row"><dt>' + r[0] + "</dt><dd>" + escapeHtml(r[1]) + "</dd></div>";
     }).join("");
-    html += '<div class="review-row"><dt>Flair (' + flairNames.length + ')</dt><dd>' +
+    html += '<div class="review-row review-row--flair"><dt>Flair (' + flairNames.length + ')</dt><dd>' +
       (flairNames.length ? escapeHtml(flairNames.join(", ")) : "None picked — that's OK, all is optional") + "</dd></div>";
     $("#review-summary").innerHTML = html;
 
@@ -436,6 +478,52 @@
     }
     breakdown += '<div class="breakdown-row total"><span>Total</span><span>$' + price.total + '</span></div>';
     $("#review-breakdown").innerHTML = breakdown;
+  }
+
+  /* ============================================================
+     ORDER PAYLOAD (built for preview only; NEVER sent on this branch)
+     Field names match what the order script already reads.
+     ============================================================ */
+  function shiftISO(iso, n) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return "";
+    var p = iso.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2] + n);
+    return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+  }
+  function buildOrderPayload() {
+    var price = computePrice();
+    var flair = pickedFlairNames();
+    var townName = $("#town").value;
+    var eventDate = $("#event-date").value;
+    var notes = $("#notes").value.trim();
+    var pickup = shiftISO(eventDate, price.days - 1);
+    return {
+      customerName: "[PREVIEW] " + $("#customer-name").value.trim(),
+      phone: $("#mobile").value.trim(),
+      email: "",
+      celebrationType: $("#occasion").value,
+      signName: $("#honoree-name").value.trim(),
+      age: $("#honoree-age").value.trim(),
+      celebrationDate: eventDate,
+      address: $("#address").value.trim(),
+      colors: $("#colors").value.trim(),
+      theme: $("#theme").value.trim(),
+      price: price.total,
+      yardDays: price.days,
+      extraDays: price.extraDays,
+      total: price.total,
+      pickupDate: pickup,
+      setupDate: shiftISO(eventDate, -1),
+      flair: flair.join(", "),
+      customerNotes: notes,
+      notes: "Town: " + townName + " | Travel: $" + price.travelFee + " | " +
+             (flair.length ? "Flair: " + flair.join(", ") + " | " : "") +
+             "Yard time: " + price.days + " days | Total: $" + price.total +
+             (notes ? "\n" + notes : ""),
+      pageUrl: location.href,
+      submittedAtLocal: new Date().toString(),
+      town: townName,
+      travelFee: price.travelFee
+    };
   }
 
   function escapeHtml(str) {
@@ -465,7 +553,10 @@
     var townName = $("#town").value;
     var eventDate = $("#event-date").value;
 
-    var picked = FLAIR.filter(function (f) { return selectedFlair.has(f.id); }).map(function (f) { return f.name; });
+    var picked = pickedFlairNames();
+    var payload = buildOrderPayload();
+    window.LB_LAST_ORDER = payload;   // for checking only; never sent
+    if (window.console && console.info) console.info("LawnBombs preview: order NOT sent.", payload);
     var summaryHtml =
       '<dl class="thanks-dl">' +
       '<div><dt>Total</dt><dd><strong>$' + price.total + '</strong></dd></div>' +
@@ -508,6 +599,7 @@
   function resetWizard() {
     $("#order-form").reset();
     selectedFlair.clear();
+    hideFlairLimit();
     $$(".flair-card").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
     $$(".occasion-tile").forEach(function (t) { t.setAttribute("aria-pressed", "false"); });
     updateFlairCount();

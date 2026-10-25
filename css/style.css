@@ -657,17 +657,28 @@ img[src*="-set.jpg"] { object-fit: contain !important; background: #F3F1EC; }
 .field .invalid { border-color: var(--pink-dark); background: #fff0f5; }
 
 /* Step 2 flair (full-screen) */
+/* The flair step drops the body padding so the teal panel is naturally full width and sits flush
+   against the top of the scroll area (no negative margins). Before, sticky top:0 stuck the panel
+   1.25rem below the top (inside the body's padding), so a strip of cards showed above it. */
+.wizard-body.is-flair-step { padding: 0 0 2rem; }
 .flair-sticky-head {
-  position: sticky; top: 0; z-index: 5; margin: -1.25rem -1rem 0; padding: 1rem 1rem .25rem;
+  position: relative; z-index: 5; margin: 0; padding: 1rem 1rem .25rem;
   background: var(--teal); border-bottom: 3px solid var(--ink);
 }
+/* Sticky only on wider screens; on phones the panel is too tall to pin, so it scrolls away
+   and the "x of 5 flair" count stays visible in the bottom total bar. */
+@media (min-width: 600px) {
+  .flair-sticky-head { position: sticky; top: 0; z-index: 20; }
+}
+.wizard-body.is-flair-step .flair-grid,
+.wizard-body.is-flair-step .flair-search-empty { margin-left: 1rem; margin-right: 1rem; }
 .flair-sticky-head .step-heading { margin-bottom: .2em; font-size: clamp(1.4rem, 6vw, 2rem); }
 .wizard .flair-count { display: inline-block; margin: 0 0 .7rem; font-size: .95rem; padding: .2em .9em; }
 .flair-sticky-head .flair-search { margin-bottom: .6rem; }
 .flair-sticky-head .flair-search__input { border: 3px solid var(--ink); --search-ink: var(--ink); --search-focus: var(--ink); --search-ring: rgba(123,47,247,.35); }
 .flair-sticky-head .chip-row { margin: 0 -1rem; padding: .1rem 1rem .75rem; }
 .chip[aria-pressed="true"] { background: var(--purple); color: var(--white); }
-.wizard .flair-grid { margin-top: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
+.wizard .flair-grid { margin-top: 1rem; padding-top: .25rem; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
 @media (min-width: 700px) { .wizard .flair-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (min-width: 1000px) { .wizard .flair-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 .wizard .flair-card { padding: .35rem; border-radius: var(--radius-sm); box-shadow: 3px 3px 0 var(--ink); min-width: 0; }
@@ -750,3 +761,18 @@ img[src*="-set.jpg"] { object-fit: contain !important; background: #F3F1EC; }
   padding: .7em .9em;
 }
 .preview-notice a { color: inherit; text-decoration: underline; }
+
+/* ---------- Flair limit (max 5) ---------- */
+.wizard-totalbar { position: relative; }
+.totalbar-flair { font-size: .8rem; font-weight: 700; color: #e9dcf7; margin-top: .15rem; white-space: nowrap; }
+.flair-limit-toast {
+  position: absolute; left: 1rem; right: 1rem; bottom: calc(100% + .6rem); margin: 0 auto; max-width: 26rem;
+  background: var(--yellow); color: var(--ink); border: 3px solid var(--ink); border-radius: 14px;
+  box-shadow: 3px 3px 0 var(--ink); padding: .55em .9em; text-align: center;
+  font-family: var(--font-display); font-weight: 700; font-size: .95rem; line-height: 1.25; z-index: 30;
+}
+.flair-limit-toast[hidden] { display: none; }
+.wizard .flair-grid.is-maxed .flair-card[aria-pressed="false"] { opacity: .55; }
+.flair-card.is-nope { animation: flair-nope .35s ease; }
+@keyframes flair-nope { 0%,100% { translate: 0 0; } 25% { translate: -4px 0; } 75% { translate: 4px 0; } }
+@media (prefers-reduced-motion: reduce) { .flair-card.is-nope { animation: none; } }
