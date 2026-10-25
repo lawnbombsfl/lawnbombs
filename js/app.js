@@ -29,6 +29,9 @@
     opt.textContent = "Select your town";
     opt.disabled = true;
     opt.selected = true;
+    // defaultSelected matters: form.reset() goes back to the default option. Without it, reset
+    // skipped this disabled placeholder and silently picked the first town (Estero).
+    opt.defaultSelected = true;
     select.appendChild(opt);
 
     TOWNS.forEach(function (town) {
@@ -45,18 +48,39 @@
       select.appendChild(o);
     });
 
-    select.addEventListener("change", function () {
-      var selected = TOWNS.filter(function (t) { return t.name === select.value; })[0];
-      var hint = $("#town-fee-hint");
-      if (!selected) { hint.textContent = ""; }
-      else if (selected.fee) { hint.textContent = "+$" + selected.fee + " travel fee for " + selected.name + "."; }
-      else if (selected.note) { hint.textContent = selected.note; }
-      else { hint.textContent = "No travel fee for " + selected.name + "."; }
-      clearError("town");
-      updateTotal();
+    ["change", "input"].forEach(function (ev) {
+      select.addEventListener(ev, function () {
+        if (select.value) clearError("town");
+        syncTown();
+      });
     });
 
     renderTownCopy();
+  }
+
+  /* One lookup for the travel fee, used by BOTH the Town hint and the total (data: js/towns.js). */
+  function townByName(name) {
+    return TOWNS.filter(function (t) { return t.name === name && !t.comingSoon; })[0] || null;
+  }
+  function travelFeeFor(name) {
+    var t = townByName(name);
+    return t ? (t.fee || 0) : 0;
+  }
+  // Recompute the hint from the CURRENT Town value (never from the last event), then the total.
+  function syncTownHint() {
+    var hint = $("#town-fee-hint");
+    if (!hint) return;
+    var t = townByName($("#town").value);
+    var fee = t ? travelFeeFor(t.name) : 0;
+    var text = "";
+    if (t && fee) text = "+$" + fee + " travel fee for " + t.name + ".";
+    else if (t && t.note) text = t.note;   // the "Other — text us" catch-all only
+    hint.textContent = text;
+    hint.hidden = !text;
+  }
+  function syncTown() {
+    syncTownHint();
+    updateTotal();
   }
 
   /* Town wording, all generated from TOWNS (js/towns.js) */
@@ -343,8 +367,8 @@
   function computePrice() {
     var days = parseInt($("#days").value, 10) || BASE_DAYS;
     var townName = $("#town").value;
-    var town = TOWNS.filter(function (t) { return t.name === townName; })[0];
-    var travelFee = town ? (town.fee || 0) : 0;
+    var town = townByName(townName);
+    var travelFee = travelFeeFor(townName);
     var extraDays = Math.max(0, days - BASE_DAYS);
     var extraDaysFee = extraDays * EXTRA_DAY_FEE;
     var total = BASE_PRICE + extraDaysFee + travelFee;
@@ -464,6 +488,7 @@
     var wbody = $(".wizard-body");
     if (wbody) wbody.classList.toggle("is-flair-step", step === 2);
     if (step !== 2) hideFlairLimit();
+    if (step === 4) syncTown();   // entering Step 4 (also when coming Back to it)
     if (step === TOTAL_STEPS) renderReview();
     var body = $(".wizard-body");
     if (body) body.scrollTop = 0;
@@ -679,7 +704,7 @@
     setMinDate();
     document.documentElement.style.overflow = "hidden";
     showStep(1);
-    updateTotal();
+    syncTown();
     var firstTile = $(".occasion-tile");
     if (firstTile) firstTile.focus();
     if (location.hash !== "#order") history.pushState(null, "", "#order");
@@ -706,7 +731,7 @@
     $("#wizard-totalbar").hidden = false;
     $("#thanks").hidden = true;
     initDaysStepper();
-    updateTotal();
+    syncTown();
   }
 
   /* ============================================================
@@ -763,6 +788,14 @@
     updateTotal();
     initLightbox();
     setMinDate();
+    syncTown();   // on load
+    // Browser form restore (back/forward cache, restored tabs) and autofill can change the Town
+    // value without a change event, so re-sync at those moments too.
+    window.addEventListener("pageshow", syncTown);
+    window.addEventListener("load", syncTown);
+    $("#order-form").addEventListener("reset", function () { setTimeout(syncTown, 0); });
+    $("#town").addEventListener("focus", syncTownHint);
+    $("#town").addEventListener("blur", syncTownHint);
 
     ["event-date", "address", "customer-name", "mobile"].forEach(function (id) {
       var field = document.getElementById(id);
