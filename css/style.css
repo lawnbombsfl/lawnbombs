@@ -599,7 +599,7 @@ img[src*="-set.jpg"] { object-fit: contain !important; background: #F3F1EC; }
   font-family: var(--font-display); font-weight: 600; font-size: .9rem; transform: rotate(-1.2deg);
 }
 .teaser-card:nth-child(even) { transform: rotate(1.4deg); }
-.teaser-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #F3F1EC; border-radius: 10px; margin-bottom: .4em; }
+.teaser-card img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: contain; background: #F3F1EC; border-radius: 10px; margin-bottom: .4em; }
 .teaser-cta { text-align: center; margin: 0; }
 .section--yellow .teaser-cta { margin-top: 1.5rem; }
 
