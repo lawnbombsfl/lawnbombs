@@ -125,6 +125,8 @@
         $$(".occasion-tile", grid).forEach(function (t) { t.setAttribute("aria-pressed", "false"); });
         tile.setAttribute("aria-pressed", "true");
         select.value = option.value;
+        clearError("occasion");
+        grid.classList.remove("invalid");
       });
       grid.appendChild(tile);
     });
@@ -218,6 +220,7 @@
       thumb.className = "flair-card__thumb";
       var placeholder = document.createElement("span");
       placeholder.className = "flair-card__placeholder";
+      placeholder.hidden = true;   // only shown if the photo really fails to load (no flash while loading)
       var pName = document.createElement("span");
       pName.className = "flair-card__placeholder-name";
       pName.textContent = item.name;
@@ -231,8 +234,7 @@
       var img = document.createElement("img");
       img.alt = item.name + " flair";
       img.loading = "lazy";
-      img.onerror = function () { img.remove(); };
-      img.onload = function () { placeholder.hidden = true; };
+      img.onerror = function () { img.remove(); placeholder.hidden = false; thumb.classList.add("is-missing"); };
       img.src = item.img;
       thumb.appendChild(img);
 
@@ -351,25 +353,74 @@
 
   function updateTotal() {
     var price = computePrice();
-    $("#total").textContent = "$" + price.total;
+    $("#total").textContent = "$" + price.total;   // #total is aria-live, so screen readers hear the new total
   }
 
   /* ============================================================
      VALIDATION
      ============================================================ */
+  // message: false/empty hides the error; true shows the default text; a string replaces the text.
+  var defaultErrors = {};
   function showError(fieldId, message) {
     var err = document.getElementById("err-" + fieldId);
     var field = document.getElementById(fieldId);
-    if (err) err.hidden = !message;
-    if (field) field.classList.toggle("invalid", !!message);
+    if (err) {
+      if (!(fieldId in defaultErrors)) defaultErrors[fieldId] = err.textContent;
+      err.textContent = typeof message === "string" ? message : defaultErrors[fieldId];
+      err.hidden = !message;
+    }
+    if (field) {
+      field.classList.toggle("invalid", !!message);
+      if (field.tagName !== "SELECT" || field.id === "town") field.setAttribute("aria-invalid", message ? "true" : "false");
+    }
+  }
+
+  /* Dates: everything is local time. Earliest event date is tomorrow (setup is the night before). */
+  function toISO(d) {
+    return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+  }
+  function tomorrowISO() {
+    var t = new Date();
+    return toISO(new Date(t.getFullYear(), t.getMonth(), t.getDate() + 1));
+  }
+  function setMinDate() {
+    var input = $("#event-date");
+    if (input) input.min = tomorrowISO();
+  }
+  function niceDate(iso) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return iso || "—";
+    var p = iso.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2]);
+    return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  }
+
+  /* US mobile: 10 digits (a leading 1 is OK). Accepts (239) 555-0100, 239-555-0100, 239.555.0100, +1 239 555 0100. */
+  function phoneDigits(raw) {
+    var d = String(raw || "").replace(/\D/g, "");
+    if (d.length === 11 && d.charAt(0) === "1") d = d.slice(1);
+    return d;
+  }
+  function isValidUSMobile(raw) {
+    return /^[2-9]\d{2}[2-9]\d{6}$/.test(phoneDigits(raw));
+  }
+  function formatPhone(raw) {
+    var d = phoneDigits(raw);
+    return d.length === 10 ? "(" + d.slice(0, 3) + ") " + d.slice(3, 6) + "-" + d.slice(6) : String(raw || "").trim();
   }
   function clearError(fieldId) { showError(fieldId, false); }
 
   function validateStep(step) {
     var ok = true;
     if (step === 1) {
+      if (!$("#occasion").value) {
+        showError("occasion", true); $("#occasion-grid").classList.add("invalid"); ok = false;
+      } else { clearError("occasion"); $("#occasion-grid").classList.remove("invalid"); }
       var date = $("#event-date");
-      if (!date.value) { showError("event-date", true); ok = false; } else clearError("event-date");
+      setMinDate();
+      if (!date.value) { showError("event-date", true); ok = false; }
+      else if (date.value < tomorrowISO()) {
+        showError("event-date", "That date is too soon. The earliest is tomorrow, " + niceDate(tomorrowISO()) + ".");
+        ok = false;
+      } else clearError("event-date");
     }
     if (step === 4) {
       [
@@ -380,6 +431,11 @@
       ].forEach(function (pair) {
         if (!pair[1]) { showError(pair[0], true); ok = false; } else clearError(pair[0]);
       });
+      var mobile = $("#mobile").value.trim();
+      if (mobile && !isValidUSMobile(mobile)) {
+        showError("mobile", "That number doesn't look right. Please use a 10-digit US mobile number, like (239) 555-0100.");
+        ok = false;
+      }
     }
     return ok;
   }
@@ -403,22 +459,30 @@
     $("#wizard-progress-fill").style.width = (step / TOTAL_STEPS * 100) + "%";
     $("#wizard-step-title").textContent = "Step " + step + " of " + TOTAL_STEPS + " — " + STEP_TITLES[step];
     $("#wizard-back").disabled = step === 1;
-    $("#wizard-next").style.display = step === TOTAL_STEPS ? "none" : "";
+    $("#wizard-next").hidden = step === TOTAL_STEPS;
+    $("#submit-order").hidden = step !== TOTAL_STEPS;   // "Send my order" lives in the sticky bar on Step 5
     var wbody = $(".wizard-body");
     if (wbody) wbody.classList.toggle("is-flair-step", step === 2);
     if (step !== 2) hideFlairLimit();
     if (step === TOTAL_STEPS) renderReview();
     var body = $(".wizard-body");
     if (body) body.scrollTop = 0;
+    var live = $("#wizard-live");
+    if (live) live.textContent = "Step " + step + " of " + TOTAL_STEPS + ": " + STEP_TITLES[step] + ". Total $" + computePrice().total + ".";
   }
 
   function nextStep() {
     if (!validateStep(currentStep)) {
-      var firstInvalid = $(".invalid");
-      if (firstInvalid) firstInvalid.focus();
+      focusFirstInvalid();
       return;
     }
     if (currentStep < TOTAL_STEPS) showStep(currentStep + 1);
+  }
+  function focusFirstInvalid() {
+    var first = $(".wizard .invalid");
+    if (!first) return;
+    if (first.id === "occasion-grid") first = $(".occasion-tile", first);
+    if (first && first.focus) first.focus();
   }
   function prevStep() {
     if (currentStep > 1) showStep(currentStep - 1);
@@ -429,7 +493,8 @@
      ============================================================ */
   function renderReview() {
     var occasion = $("#occasion").value || "—";
-    var eventDate = $("#event-date").value || "—";
+    var eventISO = $("#event-date").value;
+    var dates = yardDates(eventISO, computePrice().days);
     var honoreeName = $("#honoree-name").value.trim();
     var age = $("#honoree-age").value;
     var honoree = honoreeName ? honoreeName + (age ? " (turning " + age + ")" : "") : "—";
@@ -439,7 +504,7 @@
     var town = $("#town").value || "—";
     var days = $("#days").value;
     var name = $("#customer-name").value.trim() || "—";
-    var mobile = $("#mobile").value.trim() || "—";
+    var mobile = formatPhone($("#mobile").value) || "—";
     var notes = $("#notes").value.trim();
 
     // Bug fix: this used Array.prototype.slice.call(selectedFlair), which always returns []
@@ -448,7 +513,9 @@
 
     var rows = [
       ["Occasion", occasion],
-      ["Event date", eventDate],
+      ["Event date", niceDate(eventISO)],
+      ["Sign goes up", dates.setup ? niceDate(dates.setup) + ", the night before" : "—"],
+      ["Pickup", dates.pickup ? "After " + niceDate(dates.pickup) + " (end of day " + days + ")" : "—"],
       ["Honoree", honoree],
       ["Theme", theme],
       ["Colors", colors],
@@ -489,16 +556,22 @@
     var p = iso.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2] + n);
     return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
   }
+  /* Yard days: the sign goes up the NIGHT BEFORE the event (that evening is free, not counted).
+     Day 1 = the event day, so "2 days" = event day + the next day, and we pick it up after the last day.
+     e.g. event Sat Nov 14, 2 days: up Fri Nov 13 night, in the yard Sat + Sun, pickup after Sun Nov 15. */
+  function yardDates(eventISO, days) {
+    return { setup: shiftISO(eventISO, -1), pickup: shiftISO(eventISO, days - 1) };
+  }
   function buildOrderPayload() {
     var price = computePrice();
     var flair = pickedFlairNames();
     var townName = $("#town").value;
     var eventDate = $("#event-date").value;
     var notes = $("#notes").value.trim();
-    var pickup = shiftISO(eventDate, price.days - 1);
+    var pickup = yardDates(eventDate, price.days).pickup;
     return {
       customerName: "[PREVIEW] " + $("#customer-name").value.trim(),
-      phone: $("#mobile").value.trim(),
+      phone: formatPhone($("#mobile").value),
       email: "",
       celebrationType: $("#occasion").value,
       signName: $("#honoree-name").value.trim(),
@@ -539,12 +612,8 @@
     event.preventDefault();
     if (currentStep !== TOTAL_STEPS) { nextStep(); return; }
 
-    if (!validateStep(4)) {
-      showStep(4);
-      var firstInvalid = $(".invalid");
-      if (firstInvalid) firstInvalid.focus();
-      return;
-    }
+    if (!validateStep(1)) { showStep(1); focusFirstInvalid(); return; }
+    if (!validateStep(4)) { showStep(4); focusFirstInvalid(); return; }
 
     // PREVIEW ONLY: orders are disabled on this branch. Nothing is sent anywhere
     // (no fetch, no XHR, no sendBeacon, no form action) on any hostname.
@@ -560,7 +629,7 @@
     var summaryHtml =
       '<dl class="thanks-dl">' +
       '<div><dt>Total</dt><dd><strong>$' + price.total + '</strong></dd></div>' +
-      '<div><dt>Event date</dt><dd>' + escapeHtml(eventDate) + '</dd></div>' +
+      '<div><dt>Event date</dt><dd>' + escapeHtml(niceDate(eventDate)) + '</dd></div>' +
       '<div><dt>Town</dt><dd>' + escapeHtml(townName) + '</dd></div>' +
       '<div><dt>Days in yard</dt><dd>' + escapeHtml(price.days + " days") + '</dd></div>' +
       '</dl>' +
@@ -573,14 +642,41 @@
     $("#order-form").querySelector(".wizard-body").hidden = true;
     $("#wizard-totalbar").hidden = true;
     $("#thanks").hidden = false;
+    var title = $("#thanks-title");
+    if (title) { title.setAttribute("tabindex", "-1"); title.focus(); }
   }
 
   /* ============================================================
      WIZARD OPEN / CLOSE
      ============================================================ */
+  /* Focus trap: while a dialog is open, the rest of the page is inert and Tab cycles inside it. */
+  function setBackgroundInert(dialog, on) {
+    Array.prototype.forEach.call(document.body.children, function (el) {
+      if (el === dialog || el.tagName === "SCRIPT") return;
+      if (on) { el.setAttribute("inert", ""); el.setAttribute("aria-hidden", "true"); }
+      else { el.removeAttribute("inert"); el.removeAttribute("aria-hidden"); }
+    });
+  }
+  function focusables(root) {
+    return $$('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])', root).filter(function (el) {
+      return !el.disabled && el.tabIndex !== -1 && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== "hidden";
+    });
+  }
+  function trapTab(e, root) {
+    if (e.key !== "Tab") return;
+    var list = focusables(root);
+    if (!list.length) { e.preventDefault(); return; }
+    var first = list[0], last = list[list.length - 1];
+    var inside = root.contains(document.activeElement);
+    if (e.shiftKey && (document.activeElement === first || !inside)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || !inside)) { e.preventDefault(); first.focus(); }
+  }
+
   function openWizard() {
     lastFocusedEl = document.activeElement;
     $("#order-wizard").hidden = false;
+    setBackgroundInert($("#order-wizard"), true);
+    setMinDate();
     document.documentElement.style.overflow = "hidden";
     showStep(1);
     updateTotal();
@@ -591,6 +687,7 @@
 
   function closeWizard() {
     $("#order-wizard").hidden = true;
+    setBackgroundInert($("#order-wizard"), false);
     document.documentElement.style.overflow = "";
     if (location.hash === "#order") history.pushState(null, "", location.pathname + location.search);
     if (lastFocusedEl && lastFocusedEl.focus) lastFocusedEl.focus();
@@ -602,6 +699,8 @@
     hideFlairLimit();
     $$(".flair-card").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
     $$(".occasion-tile").forEach(function (t) { t.setAttribute("aria-pressed", "false"); });
+    ["occasion", "event-date", "address", "town", "customer-name", "mobile"].forEach(clearError);
+    $("#occasion-grid").classList.remove("invalid");
     updateFlairCount();
     $("#order-form").querySelector(".wizard-body").hidden = false;
     $("#wizard-totalbar").hidden = false;
@@ -616,18 +715,37 @@
   function initLightbox() {
     var lightbox = $("#lightbox");
     var img = $("#lightbox-img");
+    var opener = null;
+    function open(el) {
+      opener = el;
+      img.src = el.dataset.full || el.src;
+      img.alt = el.alt;
+      lightbox.hidden = false;
+      setBackgroundInert(lightbox, true);
+      $("#lightbox-close").focus();
+    }
     $$(".polaroid img").forEach(function (el) {
-      el.addEventListener("click", function () {
-        img.src = el.dataset.full || el.src;
-        img.alt = el.alt;
-        lightbox.hidden = false;
+      // Keyboard: each photo is a focusable button (Enter or Space opens it)
+      el.setAttribute("tabindex", "0");
+      el.setAttribute("role", "button");
+      el.setAttribute("aria-label", "View larger photo: " + el.alt);
+      el.addEventListener("click", function () { open(el); });
+      el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(el); }
       });
     });
-    function close() { lightbox.hidden = true; img.src = ""; }
+    function close() {
+      if (lightbox.hidden) return;
+      lightbox.hidden = true; img.src = "";
+      setBackgroundInert(lightbox, false);
+      if (opener) opener.focus();
+    }
     $("#lightbox-close").addEventListener("click", close);
     lightbox.addEventListener("click", function (e) { if (e.target === lightbox) close(); });
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && !lightbox.hidden) close();
+      if (lightbox.hidden) return;
+      if (e.key === "Escape") close();
+      else trapTab(e, lightbox);
     });
   }
 
@@ -644,10 +762,15 @@
     updateFlairCount();
     updateTotal();
     initLightbox();
+    setMinDate();
 
     ["event-date", "address", "customer-name", "mobile"].forEach(function (id) {
       var field = document.getElementById(id);
       ["input", "change"].forEach(function (ev) { field.addEventListener(ev, function () { if (field.value.trim()) clearError(id); }); });
+    });
+    $("#mobile").addEventListener("blur", function () {
+      var m = $("#mobile");
+      if (isValidUSMobile(m.value)) m.value = formatPhone(m.value);
     });
 
     $$("[data-open-wizard]").forEach(function (btn) {
@@ -663,7 +786,10 @@
     });
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && !$("#order-wizard").hidden) closeWizard();
+      var wiz = $("#order-wizard");
+      if (wiz.hidden) return;
+      if (e.key === "Escape") closeWizard();
+      else trapTab(e, wiz);
     });
     window.addEventListener("hashchange", function () {
       if (location.hash === "#order" && $("#order-wizard").hidden) openWizard();

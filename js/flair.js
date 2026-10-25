@@ -1,11 +1,11 @@
 // Flair catalog. Every item is included free with any $90 sign order — pick any number.
 // Photos: each item's photo is FLAIR_IMG_BASE + id + FLAIR_IMG_EXT (set just below; this one setting
-// controls every flair card). Default is the cleaned product-style photos in img/flair-clean/ (white
-// background, soft shadow). The original floor crops are kept in img/flair/; set FLAIR_IMG_BASE back to
-// "img/flair/" to use them instead (master copies in ../flair-crops/). Items whose photo is missing show
+// controls every flair card). Default is img/flair-320/: 320x320 copies of the cleaned product-style
+// photos (white background, soft shadow), sized for the small cards. The 600px masters live outside this
+// site (../flair-crops/ and git history). Items whose photo is missing show
 // a "Photo coming" placeholder automatically; drop a JPG with the exact filename into the image folder
 // and it appears. See README.md.
-window.FLAIR_IMG_BASE = "img/flair-clean/";   // or "img/flair/" for the original floor crops
+window.FLAIR_IMG_BASE = "img/flair-320/";   // 320px card photos (add new ones at 320x320)
 window.FLAIR_IMG_EXT = ".jpg";
 // tags: extra search words (the search box matches name + tags, case-insensitive, partial).
 // Categories: the filter chips are generated from the "category" strings below, in this order.
