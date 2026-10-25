@@ -2,1058 +2,400 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#7b4dff">
-<meta name="format-detection" content="telephone=no">
-<title>LawnBombs | Celebration Yard Signs in Estero, Bonita Springs &amp; Fort Myers</title>
-<meta name="description" content="Personalized celebration yard signs in Lee County, FL. $90 flat with 2 days in the yard, extra days +$10/day up to 5 days. We set it up the night before, you pay after it's up. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20). Text 239-494-2377 or book online.">
-<link rel="canonical" href="https://lawnbombsfl.com/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%89%3C/text%3E%3C/svg%3E">
-<link rel="preload" href="assets/fonts/fredoka-700.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="img/gallery/eliana.jpg" as="image">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="LawnBombs">
-<meta property="og:title" content="LawnBombs: Celebration Yard Signs in Bonita Springs, Estero &amp; Fort Myers">
-<meta property="og:description" content="Personalized yard signs for birthdays, babies, grads and more. $90 flat, 2 days in the yard. We set it up the night before, pay after it's up. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).">
-<meta property="og:url" content="https://lawnbombsfl.com/">
-<meta property="og:image" content="https://lawnbombsfl.com/photos/sign-5-hero.jpg">
-<meta property="og:image:width" content="980">
-<meta property="og:image:height" content="547">
-<meta property="og:image:alt" content="A LawnBombs Happy Birthday yard sign on a front lawn">
-<meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "LawnBombs",
-  "description": "Personalized celebration yard signs, set up the night before your event. $90 includes 2 days in the yard, +$10/day up to 5 days, pay after it's up. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20). Text 239-494-2377 (text only) or book online.",
-  "url": "https://lawnbombsfl.com/",
-  "image": "https://lawnbombsfl.com/photos/sign-5-hero.jpg",
-  "telephone": "+1-239-494-2377",
-  "priceRange": "$90",
-  "paymentAccepted": "Cash, Zelle, Venmo",
-  "sameAs": ["https://www.facebook.com/LawnBombsEstero"],
-  "address": { "@type": "PostalAddress", "addressLocality": "Estero", "addressRegion": "FL", "addressCountry": "US" },
-  "areaServed": [
-    { "@type": "AdministrativeArea", "name": "Lee County, FL" },
-    { "@type": "City", "name": "Bonita Springs, FL" },
-    { "@type": "City", "name": "Estero, FL" },
-    { "@type": "City", "name": "Fort Myers, FL" },
-    { "@type": "Place", "name": "San Carlos Park, FL" },
-    { "@type": "Place", "name": "Three Oaks, FL" },
-    { "@type": "Place", "name": "Gateway, FL" },
-    { "@type": "Place", "name": "Lehigh Acres, FL" },
-    { "@type": "City", "name": "Naples, FL" },
-    { "@type": "City", "name": "Fort Myers Beach, FL" }
-  ]
-}
-</script>
-<script>
-/* ==================================================================
-   CONFIG - the only things you should need to edit
-   ================================================================== */
-// Google Apps Script Web app URL (orders land in the order sheet). Do not change.
-const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbz5iW0TlUrADO5mq7DhDCYyB1bAmkLjzN8mmm73J0GSEK6RNN70KMLZXTd2-Usg0sGg/exec";
-
-// TEST MODE: orders are only POSTed on these hostnames, and never when the URL has ?preview=1.
-// Anywhere else (raw.githack, localhost, github.io...) the page shows a "Preview, orders not sent"
-// banner and nothing is sent.
-const LIVE_HOSTS = ["lawnbombsfl.com", "www.lawnbombsfl.com"];
-
-const PRICE_STANDARD  = 90;  // flat price for every sign type (includes 2 days in the yard)
-const INCLUDED_DAYS   = 2;   // days in the yard included in the price
-const MAX_DAYS        = 5;   // longest a customer can keep the sign up
-const EXTRA_DAY_PRICE = 10;  // per extra day beyond INCLUDED_DAYS
-const PHONE_DISPLAY   = "239-494-2377";
-const PHONE_LINK      = "+12394942377";   // used for sms: links only (text only)
-
-// Travel fees by town (everything not listed here is $0). Town list lives in the order form's Town dropdown.
-const TRAVEL_FEES = { "Lehigh Acres": 15, "Naples": 20, "Fort Myers Beach": 20 };
-
-// How many days ahead someone must book online. 1 = tomorrow at the earliest.
-const MIN_DAYS_AHEAD = 1;
-
-// ----- Photo gallery -----
-// Real past LawnBombs signs (plates, house numbers and faces blurred; first names only).
-// Full size in img/gallery/ (800px wide), small copies in img/gallery/thumb/ (480px).
-const GALLERY = [
-  { file: "grant.jpg",   w: 800, h: 400, caption: "Happy 3rd, Grant! (Mickey & Buzz)" },
-  { file: "jonah.jpg",   w: 800, h: 400, caption: "Happy birthday, Jonah! (glitter letters)" },
-  { file: "hudson.jpg",  w: 800, h: 400, caption: "Welcome home, Hudson! (set up the night before)" },
-  { file: "addison.jpg", w: 800, h: 444, caption: "Welcome home, Baby Addison!" },
-  { file: "parker.jpg",  w: 800, h: 400, caption: "Happy 6th, Parker! (sports theme)" },
-  { file: "mason.jpg",   w: 800, h: 400, caption: "Happy 10th, Mason! (gamer theme)" },
-  { file: "mateo.jpg",   w: 800, h: 370, caption: "Happy 6th, Mateo! (soccer theme)" },
-  { file: "tony.jpg",    w: 800, h: 400, caption: "Happy 28th, Tony!" },
-  { file: "annette.jpg", w: 800, h: 400, caption: "Welcome, Annette!" },
-];
-
-// ----- Pick your flair -----
-// Real pieces from LawnBombs signs (tile images in img/flair/). All included in the $90,
-// no limit, no stock tracking.
-const FLAIR = [
-  { key: "balloons",   label: "Balloons" },
-  { key: "stars",      label: "Stars" },
-  { key: "hearts",     label: "Hearts" },
-  { key: "number",     label: "Big age numbers" },
-  { key: "glitter",    label: "Glitter letters" },
-  { key: "cake",       label: "Birthday cake" },
-  { key: "cupcake",    label: "Cupcake" },
-  { key: "soccer",     label: "Soccer ball" },
-  { key: "football",   label: "Football" },
-  { key: "baseball",   label: "Baseball" },
-  { key: "controller", label: "Game controller" },
-  { key: "truck",      label: "Monster truck" },
-  { key: "mickey",     label: "Mickey Mouse" },
-  { key: "buzz",       label: "Buzz Lightyear" },
-  { key: "pirate",     label: "Pirate" },
-  { key: "shark",      label: "Sharks" },
-  { key: "dog",        label: "Puppy with bone" },
-  { key: "poop",       label: "Poop emoji" },
-  { key: "beer",       label: "Beer mug" },
-  { key: "tropical",   label: "Tropical flowers & pineapple" },
-  { key: "bottle",     label: "Baby bottle" },
-  { key: "feet",       label: "Baby feet" },
-  { key: "duck",       label: "Rubber duck" },
-  { key: "stroller",   label: "Baby stroller" },
-];
-
-// ----- Customer reviews -----
-// Real Google reviews (first name + last initial only). Section hides itself while empty.
-const REVIEWS = [
-  { text: "Gavin did a great job for my daughter's birthday yard sign! I've been using lawn bombs for years and they always do a wonderful job! Thank you!!", name: "Darci S.", source: "Google review" },
-  { text: "This experience was awesome!! Fast service, reasonable price, great customer service, and even takes down the signs!! I will absolutely be using them again!!", name: "Leslie G.", source: "Google review" },
-  { text: "Awesome signs!", name: "Jay B.", source: "Google review" },
-];
-
-// ----- Social links (footer). Leave "" to hide one. -----
-const FACEBOOK_URL  = "https://www.facebook.com/LawnBombsEstero";
-const INSTAGRAM_URL = "";
-</script>
-<style>
-  @font-face { font-family: "Fredoka"; font-style: normal; font-weight: 600; font-display: swap; src: url(assets/fonts/fredoka-600.woff2) format("woff2"); }
-  @font-face { font-family: "Fredoka"; font-style: normal; font-weight: 700; font-display: swap; src: url(assets/fonts/fredoka-700.woff2) format("woff2"); }
-  :root {
-    --pink: #ff3d8b; --orange: #ff9a1f; --yellow: #ffd23f; --teal: #11c5bf; --purple: #7b4dff; --purple-dk: #5a2fe0;
-    --ink: #24163f; --muted: #615a75; --line: #e4def2; --bg: #fff8ef; --card: #fff; --soft: #f4efff;
-    --display: "Fredoka", ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif;
-    --navh: 104px;
-  }
-  *, *::before, *::after { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: calc(var(--navh) + 8px); }
-  body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.5; overflow-x: hidden;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-  img { max-width: 100%; display: block; }
-  a { color: var(--purple); }
-  h1, h2, h3, .display { font-family: var(--display); line-height: 1.1; margin: 0; }
-  .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 16px; }
-  section.block { padding: 40px 0; }
-  .eyebrow { font-family: var(--display); font-weight: 600; color: var(--pink); text-transform: uppercase; letter-spacing: .08em; font-size: .85rem; margin: 0 0 4px; }
-  .h2 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 700; margin-bottom: 8px; }
-  .lead { color: var(--muted); margin: 0 0 18px; max-width: 60ch; }
-
-  /* ----- Preview banner ----- */
-  .previewBar { display: none; background: #24163f; color: #ffd23f; text-align: center; font-weight: 700; font-size: .85rem; padding: 6px 12px; }
-  body.preview .previewBar { display: block; }
-
-  /* ----- Sticky nav ----- */
-  .nav { position: sticky; top: 0; z-index: 50; background: rgba(255,248,239,.94); backdrop-filter: saturate(1.4) blur(8px); -webkit-backdrop-filter: saturate(1.4) blur(8px); border-bottom: 1px solid var(--line); }
-  .nav .bar { display: flex; align-items: center; gap: 10px; min-height: 56px; }
-  .brand { font-family: var(--display); font-weight: 700; font-size: 1.5rem; color: var(--purple); text-decoration: none; letter-spacing: -.01em; margin-right: auto; }
-  .brand span { color: var(--pink); }
-  .navlinks { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding: 0 0 8px; margin: 0 -16px; padding-left: 12px; padding-right: 12px; }
-  .navlinks::-webkit-scrollbar { display: none; }
-  .navlinks a { flex: none; text-decoration: none; color: var(--ink); font-weight: 700; font-size: .92rem; padding: 8px 12px; border-radius: 999px; }
-  .navlinks a:hover, .navlinks a.on { background: var(--soft); color: var(--purple); }
-  .pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 999px; font-family: var(--display); font-weight: 600; font-size: 1rem; text-decoration: none; border: 0; cursor: pointer; white-space: nowrap; }
-  .pill svg { width: 20px; height: 20px; flex: none; }
-  .pill.text { background: var(--yellow); color: var(--ink); }
-  .pill.book { background: var(--purple); color: #fff; }
-  .nav .pill.text .num { display: none; }
-  @media (min-width: 820px) {
-    :root { --navh: 64px; }
-    .nav .bar { min-height: 64px; }
-    .navlinks { order: 0; margin: 0; padding: 0; }
-    .nav .wrap { display: flex; align-items: center; gap: 12px; }
-    .nav .bar { flex: 1; }
-    .nav .pill.text .num { display: inline; }
-  }
-
-  /* ----- Hero ----- */
-  .hero { background: linear-gradient(135deg, #7b4dff 0%, #c548d8 45%, #ff3d8b 75%, #ff9a1f 100%); color: #fff; padding: 28px 0 36px; position: relative; overflow: hidden; }
-  .hero .wrap { display: grid; gap: 22px; position: relative; }
-  .hero .badge { line-height: 1.5; display: inline-block; background: rgba(36,22,63,.25); padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
-  .hero h1 { font-size: clamp(2.1rem, 9vw, 3.6rem); font-weight: 700; margin: 12px 0 10px; text-shadow: 0 3px 0 rgba(36,22,63,.25); }
-  .hero h1 em { font-style: normal; color: var(--yellow); }
-  .priceTag { display: inline-flex; align-items: baseline; gap: 8px; flex-wrap: wrap; background: #fff; color: var(--ink); border-radius: 16px; padding: 10px 14px; box-shadow: 0 6px 0 rgba(36,22,63,.18); margin: 6px 0 18px; }
-  .priceTag b { font-family: var(--display); font-size: 1.9rem; color: var(--purple); line-height: 1; }
-  .priceTag span { font-weight: 700; }
-  .heroCtas { display: grid; gap: 10px; max-width: 420px; }
-  .bigbtn { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 58px; border-radius: 18px; font-family: var(--display); font-weight: 700; font-size: 1.3rem; text-decoration: none; border: 0; cursor: pointer; width: 100%; }
-  .bigbtn svg { width: 24px; height: 24px; flex: none; }
-  .bigbtn.text { background: var(--yellow); color: var(--ink); box-shadow: 0 6px 0 rgba(36,22,63,.25); }
-  .bigbtn.ghost { background: rgba(255,255,255,.16); color: #fff; border: 2px solid rgba(255,255,255,.7); font-size: 1.1rem; min-height: 52px; }
-  .bigbtn:active { transform: translateY(2px); }
-  .nw { white-space: nowrap; }
-  body.preview { --navh: 130px; }
-  @media (min-width: 820px) { body.preview { --navh: 92px; } }
-  html:has(body.preview) { scroll-padding-top: calc(var(--navh) + 36px); }
-  .heroNote { font-size: .92rem; opacity: .95; margin: 10px 0 0; }
-  .heroPhoto { margin: 0; background: #fff; padding: 8px; border-radius: 22px; box-shadow: 0 16px 40px rgba(36,22,63,.3); transform: rotate(-1.2deg); }
-  .heroPhoto img { border-radius: 16px; width: 100%; height: auto; aspect-ratio: 800 / 447; object-fit: cover; }
-  .heroPhoto figcaption { color: var(--muted); font-size: .82rem; font-weight: 700; padding: 6px 4px 0; text-align: center; }
-  @media (min-width: 820px) {
-    .hero { padding: 56px 0 64px; }
-    .hero .wrap { grid-template-columns: 1.05fr 1fr; align-items: center; gap: 40px; }
-  }
-
-  /* ----- Perks / how it works ----- */
-  .steps { display: grid; gap: 12px; grid-template-columns: 1fr; }
-  .stepcard { background: var(--card); border-radius: 18px; padding: 16px; box-shadow: 0 6px 18px rgba(36,22,63,.07); display: flex; gap: 12px; align-items: flex-start; }
-  .stepcard .n { flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--purple); color: #fff; font-family: var(--display); font-weight: 700; display: grid; place-items: center; }
-  .stepcard:nth-child(2) .n { background: var(--pink); } .stepcard:nth-child(3) .n { background: var(--teal); }
-  .stepcard b { display: block; font-family: var(--display); font-weight: 600; font-size: 1.1rem; }
-  .stepcard p { margin: 2px 0 0; color: var(--muted); font-size: .95rem; }
-  @media (min-width: 700px) { .steps { grid-template-columns: repeat(3, 1fr); } }
-
-  /* ----- Gallery ----- */
-  .grid { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (min-width: 820px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; } }
-  .tile { margin: 0; background: var(--card); border-radius: 14px; overflow: hidden; box-shadow: 0 6px 16px rgba(36,22,63,.08); }
-  .tile button { display: block; width: 100%; padding: 0; border: 0; background: #e9e4f5; cursor: zoom-in; }
-  .tile img { width: 100%; height: auto; aspect-ratio: 2 / 1; object-fit: cover; }
-  .tile figcaption { padding: 6px 10px 8px; font-size: .8rem; font-weight: 700; line-height: 1.25; }
-  .lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(20,12,40,.94); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 64px 12px 24px; }
-  .lightbox.open { display: flex; }
-  .lightbox img { max-width: min(100%, 1000px); max-height: 72vh; width: auto; height: auto; border-radius: 12px; }
-  .lightbox p { color: #fff; font-weight: 700; margin: 12px 0 0; text-align: center; }
-  .lightbox .lbctl { display: flex; gap: 12px; margin-top: 14px; }
-  .lbbtn { min-width: 48px; min-height: 48px; border: 0; border-radius: 50%; background: #fff; color: var(--ink); font-size: 1.5rem; font-weight: 700; cursor: pointer; line-height: 1; }
-  .lightbox .lbclose { position: absolute; top: 12px; right: 12px; }
-  .lbcount { color: #cfc6e8; font-size: .85rem; margin-top: 4px; }
-
-  /* ----- Pricing ----- */
-  .pricecard { background: var(--card); border-radius: 22px; padding: 20px 18px; box-shadow: 0 10px 28px rgba(36,22,63,.1); border: 3px solid var(--purple); }
-  .pricecard .big { font-family: var(--display); font-weight: 700; font-size: 3.2rem; color: var(--purple); line-height: 1; }
-  .pricecard .big small { font-size: 1.1rem; color: var(--ink); margin-left: 6px; }
-  .incl { list-style: none; padding: 0; margin: 14px 0; display: grid; gap: 8px; }
-  .incl li { padding-left: 30px; position: relative; font-weight: 600; }
-  .incl li::before { content: "\2713"; position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--teal); color: #fff; font-size: .8rem; display: grid; place-items: center; font-weight: 700; }
-  .daysPick { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 8px 0 10px; }
-  .daysPick input { position: absolute; opacity: 0; pointer-events: none; }
-  .daysPick label { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60px; border: 2px solid var(--line); border-radius: 14px; cursor: pointer; font-weight: 700; font-size: .85rem; line-height: 1.2; background: #fff; text-align: center; }
-  .daysPick label b { font-family: var(--display); font-size: 1.15rem; color: var(--purple); }
-  .daysPick input:checked + label { border-color: var(--purple); background: var(--soft); box-shadow: 0 0 0 2px var(--purple) inset; }
-  .daysPick input:focus-visible + label { outline: 3px solid var(--yellow); outline-offset: 2px; }
-  .totalLine { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; background: var(--soft); border-radius: 14px; padding: 10px 14px; font-weight: 700; }
-  .totalLine .amt { font-family: var(--display); font-size: 1.8rem; color: var(--purple); }
-  .pricegrid { display: grid; gap: 16px; }
-  @media (min-width: 820px) { .pricegrid { grid-template-columns: 1fr 1fr; align-items: start; } }
-  .fineprint { color: var(--muted); font-size: .9rem; margin: 10px 0 0; }
-
-  /* ----- Reviews ----- */
-  .reviews { display: grid; gap: 12px; }
-  @media (min-width: 820px) { .reviews { grid-template-columns: repeat(3, 1fr); } }
-  .review { background: var(--card); border-radius: 18px; padding: 16px; box-shadow: 0 6px 18px rgba(36,22,63,.07); margin: 0; }
-  .review .stars { color: var(--orange); letter-spacing: 2px; }
-  .review p { margin: 6px 0 8px; }
-  .review .who { color: var(--muted); font-size: .88rem; font-weight: 700; }
-
-  /* ----- Order form ----- */
-  .orderBg { background: linear-gradient(180deg, var(--soft), var(--bg)); }
-  .card { background: var(--card); border-radius: 22px; padding: 20px 16px; box-shadow: 0 8px 24px rgba(36,22,63,.08); margin-bottom: 14px; }
-  .card h3 { font-size: 1.35rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-  .card .sub { margin: 4px 0 14px; color: var(--muted); font-size: .95rem; }
-  .stepn { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--purple); color: #fff; display: grid; place-items: center; font-size: 1rem; }
-  .formcol { max-width: 680px; margin: 0 auto; }
-  .field { margin-bottom: 16px; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 520px) { .row { grid-template-columns: 1fr; gap: 0; } }
-  label, legend, .label { display: block; font-weight: 700; font-size: .98rem; margin-bottom: 6px; padding: 0; }
-  .opt { font-weight: 600; color: var(--muted); font-size: .85rem; }
-  .req { color: var(--pink); }
-  input[type=text], input[type=tel], input[type=email], input[type=date], select, textarea {
-    width: 100%; max-width: 100%; min-height: 50px; padding: 12px 14px; font: inherit; font-size: 16px; color: var(--ink);
-    background: #fff; border: 2px solid var(--line); border-radius: 14px; -webkit-appearance: none; appearance: none; }
-  input[type=date] { display: block; min-width: 0; }
-  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%237b4dff' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
-  textarea { min-height: 96px; resize: vertical; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 4px rgba(123,77,255,.18); }
-  .invalid { border-color: #e5484d !important; background: #fff6f6 !important; }
-  .valid { border-color: #2bb673; }
-  .err { display: none; color: #c4262c; font-size: .88rem; font-weight: 600; margin-top: 6px; }
-  .err.show { display: block; }
-  .hint { color: var(--muted); font-size: .88rem; margin-top: 6px; }
-  fieldset { border: 0; padding: 0; margin: 0 0 16px; min-width: 0; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chips input { position: absolute; opacity: 0; pointer-events: none; }
-  .chips label { margin: 0; padding: 10px 14px; min-height: 44px; display: inline-flex; align-items: center; border: 2px solid var(--line); border-radius: 999px; background: #fff; font-weight: 700; font-size: .92rem; cursor: pointer; }
-  .chips input:checked + label { border-color: var(--purple); background: var(--soft); color: var(--purple); }
-  .chips input:focus-visible + label { outline: 3px solid var(--yellow); outline-offset: 2px; }
-  .flairHead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .flairIncl { display: inline-block; background: #e3fbf9; color: #08746f; font-weight: 700; font-size: .88rem; padding: 6px 12px; border-radius: 999px; margin: 0 0 10px; }
-  .flairgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  @media (min-width: 560px) { .flairgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-  @media (min-width: 820px) { .flairgrid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
-  .flair { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 5px 4px 8px; min-width: 0;
-    border: 2px solid var(--line); border-radius: 14px; background: #fff; font: inherit; font-size: .78rem; font-weight: 700; color: var(--ink); line-height: 1.15; cursor: pointer; text-align: center; }
-  .flair img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #f1edf8; }
-  .flair[aria-pressed="true"] { border-color: var(--purple); background: var(--soft); box-shadow: 0 0 0 2px var(--purple) inset; }
-  .flair[aria-pressed="true"]::after { content: "\2713"; position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border-radius: 50%; background: var(--purple); color: #fff; font-size: .9rem; line-height: 24px; text-align: center; }
-  .flair:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
-  .flaircount { margin-top: 10px; font-size: .9rem; font-weight: 700; color: var(--purple); min-height: 1.3em; }
-  .linkbtn { background: none; border: 0; color: var(--purple); font: inherit; font-weight: 700; font-size: .88rem; text-decoration: underline; cursor: pointer; padding: 6px 0; }
-  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-  .formError { display: none; background: #fff0f0; color: #b3261e; border-radius: 12px; padding: 10px 12px; font-weight: 600; margin-bottom: 12px; }
-  .formError.show { display: block; }
-  .orderTotal { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; border-top: 2px dashed var(--line); padding-top: 12px; margin: 4px 0 12px; font-weight: 700; }
-  .orderTotal .amt { font-family: var(--display); font-size: 1.7rem; color: var(--purple); }
-  .btn { display: block; width: 100%; min-height: 60px; border: 0; border-radius: 18px; background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; font-family: var(--display); font-weight: 700; font-size: 1.25rem; cursor: pointer; box-shadow: 0 6px 0 rgba(36,22,63,.2); }
-  .btn:disabled { opacity: .7; cursor: progress; }
-  .btn.ghost { background: #fff; color: var(--purple); border: 2px solid var(--purple); box-shadow: none; font-size: 1.05rem; min-height: 52px; margin-top: 10px; }
-  .btn.share { background: var(--teal); font-size: 1.05rem; min-height: 52px; margin-top: 10px; }
-  .fine { color: var(--muted); font-size: .88rem; text-align: center; margin: 10px 0 0; }
-
-  /* ----- Thank you ----- */
-  #thanks { display: none; text-align: center; }
-  #thanks .party { font-size: 3.2rem; line-height: 1; }
-  #thanks h3 { display: block; font-size: 1.8rem; margin: 10px 0 6px; }
-  #thanks p { color: var(--muted); margin: 0 auto 12px; max-width: 36ch; }
-  .summary { text-align: left; background: var(--soft); border-radius: 16px; padding: 4px 14px; margin: 0 0 14px; }
-  .summary div { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: .93rem; }
-  .summary div:last-child { border-bottom: 0; }
-  .summary span:first-child { color: var(--muted); flex: none; }
-  .summary span:last-child { font-weight: 700; text-align: right; overflow-wrap: anywhere; min-width: 0; }
-  .previewNote { display: none; background: #fff4c7; color: #6b4e00; border-radius: 12px; padding: 8px 12px; font-size: .85rem; font-weight: 700; margin-top: 12px; }
-  body.preview .previewNote { display: block; }
-
-  /* ----- FAQ ----- */
-  .faq { background: var(--card); border-radius: 22px; padding: 6px 18px; box-shadow: 0 8px 24px rgba(36,22,63,.07); max-width: 780px; }
-  .faq details { border-bottom: 1px solid var(--line); }
-  .faq details:last-child { border-bottom: 0; }
-  .faq summary { cursor: pointer; list-style: none; padding: 16px 32px 16px 0; font-weight: 700; position: relative; }
-  .faq summary::-webkit-details-marker { display: none; }
-  .faq summary::after { content: "+"; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-family: var(--display); font-size: 1.5rem; color: var(--purple); }
-  .faq details[open] summary::after { content: "\2013"; }
-  .faq details p { margin: 0 0 16px; color: var(--muted); }
-  .faq a { font-weight: 700; }
-
-  /* ----- Footer ----- */
-  footer { background: var(--ink); color: #e8e2f6; padding: 32px 0 40px; text-align: center; }
-  footer .brand { color: #fff; font-size: 1.6rem; margin: 0; }
-  footer p { margin: 8px 0; font-size: .95rem; }
-  footer a { color: var(--yellow); font-weight: 700; }
-  footer .bigbtn { max-width: 360px; margin: 14px auto 6px; }
-  .social a { margin: 0 6px; color: #fff; }
-
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>LawnBombs — Yard Greeting Signs in Lee County, FL | $90 Flat</title>
+<meta name="description" content="LawnBombs pops up bright yard greeting signs across Lee County, FL — $90 flat, 2 days in the yard, set up the night before, pay after it's up. Text 239-494-2377.">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-sms" viewBox="0 0 24 24"><path fill="currentColor" d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H8l-4.6 3.7A.9.9 0 0 1 2 21V5a2 2 0 0 1 2-2zm3 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></symbol></svg>
 
-<nav class="nav" aria-label="Main">
-  <div class="previewBar" id="previewBar" role="status">Preview, orders not sent</div>
-  <div class="wrap">
-    <div class="bar">
-      <a class="brand" href="#home">Lawn<span>Bombs</span></a>
-      <a class="pill text" href="sms:+12394942377" aria-label="Text LawnBombs at 239-494-2377"><svg><use href="#i-sms"/></svg><span>Text<span class="num"> 239-494-2377</span></span></a>
-      <a class="pill book" href="#order">Book</a>
-    </div>
-    <div class="navlinks" id="navlinks">
+<div class="preview-banner" role="status">Preview, orders are off. To book, <a href="sms:+12394942377">text 239-494-2377</a>.</div>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="logo" href="#top" aria-label="LawnBombs home">
+      <span class="logo__mark" aria-hidden="true">💥</span>
+      <span class="logo__word">Lawn<span class="logo__pop">Bombs</span></span>
+    </a>
+    <nav class="header-nav" aria-label="Primary">
+      <a href="#how">How it works</a>
       <a href="#gallery">Gallery</a>
       <a href="#pricing">Pricing</a>
-      <a href="#flair">Flair</a>
-      <a href="#order">Order</a>
-      <a href="#reviews" data-reviews>Reviews</a>
       <a href="#faq">FAQ</a>
+    </nav>
+    <div class="header-actions">
+      <button type="button" class="btn btn--primary btn--header-order" data-open-wizard>Order</button>
+      <a class="btn btn--text-us" href="sms:+12394942377"><span aria-hidden="true">💬</span> Text us</a>
     </div>
-  </div>
-</nav>
-
-<header class="hero" id="home">
-  <div class="wrap">
-    <div>
-      <span class="badge">Estero &middot; Bonita Springs &middot; Fort Myers &middot; San Carlos Park &middot; Three Oaks &middot; Gateway &middot; Lehigh Acres &middot; Naples &middot; Fort Myers Beach</span>
-      <h1>Yard signs that make the <em>whole street</em> smile</h1>
-      <div class="priceTag"><b>$90 flat</b><span>2 days in the yard</span></div>
-      <div class="heroCtas">
-        <a class="bigbtn text" href="sms:+12394942377" aria-label="Text LawnBombs at 239-494-2377"><svg><use href="#i-sms"/></svg><span>Text 239-494-2377</span></a>
-        <a class="bigbtn ghost" href="#order">Book online in 2 minutes</a>
-      </div>
-      <p class="heroNote"><span class="nw">Set up the night before</span> &middot; <span class="nw">Pay after it's up</span> &middot; <span class="nw">No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20)</span></p>
-    </div>
-    <figure class="heroPhoto">
-      <img src="img/gallery/eliana.jpg" width="800" height="447" fetchpriority="high" alt="A real LawnBombs sign on a front lawn: pink, black and purple letters spelling Happy 10th Birthday, with cupcake, balloon, star and heart cutouts">
-      <figcaption>A real LawnBombs setup in Lee County</figcaption>
-    </figure>
   </div>
 </header>
 
-<main>
-  <section class="block" aria-label="How it works">
-    <div class="wrap">
-      <div class="steps">
-        <div class="stepcard"><span class="n">1</span><div><b>Book or text</b><p>Tell us the name, date, colors and flair. Takes 2 minutes.</p></div></div>
-        <div class="stepcard"><span class="n">2</span><div><b>We set it up the night before</b><p>It's waiting when they wake up. You don't need to be home.</p></div></div>
-        <div class="stepcard"><span class="n">3</span><div><b>Pay after it's up</b><p>Cash, Zelle or Venmo. No deposit. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).</p></div></div>
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero__blobs" aria-hidden="true">
+      <svg class="blob blob--1" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path d="M45,-58.3C58.8,-50.1,70.6,-36.4,75.3,-20.3C80,-4.2,77.5,14.3,68.8,29.6C60.1,44.9,45.2,57,28.4,64.2C11.6,71.4,-7.1,73.7,-23.9,68.5C-40.7,63.3,-55.6,50.6,-64.3,34.6C-73,18.6,-75.5,-0.7,-70.6,-17.7C-65.7,-34.7,-53.4,-49.4,-38.5,-57.6C-23.6,-65.8,-6.1,-67.5,9.8,-64.6C25.7,-61.7,31.2,-66.5,45,-58.3Z" transform="translate(100 100)"/></svg>
+      <svg class="blob blob--2" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path d="M39.5,-51.1C52.8,-41.6,65.9,-30.5,70.9,-16.1C75.9,-1.7,72.9,16,64.1,29.9C55.3,43.8,40.7,53.9,24.4,60.3C8.1,66.7,-9.9,69.4,-26.5,64.6C-43.1,59.8,-58.3,47.5,-66.3,31.5C-74.3,15.5,-75.1,-4.3,-68.5,-20.8C-61.9,-37.3,-47.9,-50.5,-32.5,-59.3C-17.1,-68.1,-0.3,-72.5,13.9,-67.9C28.1,-63.3,26.2,-60.6,39.5,-51.1Z" transform="translate(100 100)"/></svg>
+    </div>
+    <div class="confetti" aria-hidden="true"></div>
+    <div class="hero__inner">
+      <p class="sticker sticker--yellow sticker--rot1">$90 flat!</p>
+      <h1 class="hero__title">Yard signs that pop&nbsp;the&nbsp;party&nbsp;off.</h1>
+      <p class="hero__sub">Big, bright, custom yard greetings. We set it up the night before, you pay after it's up — simple as that.</p>
+      <div class="hero__badges">
+        <span class="sticker sticker--teal sticker--rot2">2 days in the yard</span>
+        <span class="sticker sticker--pink sticker--rot3">Pay after it's up</span>
+      </div>
+      <div class="hero__cta">
+        <button type="button" class="btn btn--primary btn--big" id="start-order" data-open-wizard>Order Your Sign</button>
+        <a class="btn btn--secondary btn--big" href="sms:+12394942377">Text 239-494-2377</a>
+      </div>
+      <p class="hero__towns" id="hero-towns"><!-- rendered from TOWNS by app.js --></p>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section section--purple" id="how" aria-labelledby="how-title">
+    <div class="section__inner">
+      <h2 id="how-title" class="section__title">How it works</h2>
+      <ol class="steps">
+        <li class="step">
+          <span class="step__num">1</span>
+          <h3>Pick your sign &amp; flair</h3>
+          <p>Book online or text us — any occasion, any theme.</p>
+        </li>
+        <li class="step">
+          <span class="step__num">2</span>
+          <h3>We set it up the night before</h3>
+          <p>So your lawn is ready to surprise everyone first thing.</p>
+        </li>
+        <li class="step">
+          <span class="step__num">3</span>
+          <h3>You pay after it's up</h3>
+          <p>We pick it up after your event — no hassle.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="section section--cream" id="gallery" aria-labelledby="gallery-title">
+    <div class="section__inner section__inner--full">
+      <h2 id="gallery-title" class="section__title">Recent LawnBombs</h2>
+      <p class="section__sub">A few signs we've popped up around the neighborhood.</p>
+    </div>
+    <div class="gallery-scroller" role="group" aria-label="Photo gallery, scroll sideways to see more">
+      <ul class="gallery-track">
+        <li class="polaroid"><img src="img/gallery/thumb/addison.jpg" data-full="img/gallery/addison.jpg" width="800" height="400" loading="lazy" alt="Birthday yard sign on a lawn"><span class="polaroid__cap">Baby welcome</span></li>
+        <li class="polaroid"><img src="img/gallery/thumb/annette.jpg" data-full="img/gallery/annette.jpg" width="800" height="400" loading="lazy" alt="Celebration yard sign on a lawn"><span class="polaroid__cap">Welcome sign</span></li>
+        <li class="polaroid"><img src="img/gallery/thumb/grant.jpg" data-full="img/gallery/grant.jpg" width="800" height="400" loading="lazy" alt="Yard greeting sign with flair decorations"><span class="polaroid__cap">Birthday sign</span></li>
+        <li class="polaroid"><img src="img/gallery/thumb/hudson.jpg" data-full="img/gallery/hudson.jpg" width="800" height="400" loading="lazy" alt="Birthday yard sign set up on a front lawn"><span class="polaroid__cap">Welcome home</span></li>
+        <li class="polaroid"><img src="img/gallery/thumb/jonah.jpg" data-full="img/gallery/jonah.jpg" width="800" height="400" loading="lazy" alt="Yard sign with colorful flair pieces"><span class="polaroid__cap">Birthday surprise</span></li>
+        <li class="polaroid"><img src="img/gallery/thumb/mason.jpg" data-full="img/gallery/mason.jpg" width="800" height="400" loading="lazy" alt="Yard greeting sign on green grass"><span class="polaroid__cap">Birthday sign</span></li>
+        <li class="polaroid"><img src="img/gallery/thumb/mateo.jpg" data-full="img/gallery/mateo.jpg" width="800" height="400" loading="lazy" alt="Custom yard sign display at a home"><span class="polaroid__cap">Birthday sign</span></li>
+        <li class="polaroid"><img src="img/gallery/thumb/parker.jpg" data-full="img/gallery/parker.jpg" width="800" height="400" loading="lazy" alt="Yard sign celebration display"><span class="polaroid__cap">Birthday party</span></li>
+        <li class="polaroid"><img src="img/gallery/thumb/tony.jpg" data-full="img/gallery/tony.jpg" width="800" height="400" loading="lazy" alt="Yard greeting sign set up for a celebration"><span class="polaroid__cap">Birthday sign</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- FLAIR TEASER -->
+  <section class="section section--teal" id="flair" aria-labelledby="flair-title">
+    <div class="section__inner">
+      <h2 id="flair-title" class="section__title">Flair? All included.</h2>
+      <p class="section__sub">Pick as many pieces as you want from <strong id="flair-total-count">148</strong> options — characters, sports, babies, over-the-hill signs and more. Every piece is included in the $90.</p>
+      <ul class="teaser-grid">
+        <li class="teaser-card"><img src="img/flair-clean/super-mario-set.jpg" width="600" height="600" loading="lazy" alt="Super Mario flair"><span>Super Mario</span></li>
+        <li class="teaser-card"><img src="img/flair-clean/baby-boy-set.jpg" width="600" height="600" loading="lazy" alt="Blue baby boy set flair"><span>Blue baby boy set</span></li>
+        <li class="teaser-card"><img src="img/flair-clean/over-the-hill-set.jpg" width="600" height="600" loading="lazy" alt="Over the hill signs flair"><span>Over the hill signs</span></li>
+        <li class="teaser-card"><img src="img/flair-clean/superheroes-set.jpg" width="600" height="600" loading="lazy" alt="Superheroes flair"><span>Superheroes</span></li>
+        <li class="teaser-card"><img src="img/flair-clean/sweet-16-set.jpg" width="600" height="600" loading="lazy" alt="Sweet 16 flair"><span>Sweet 16</span></li>
+        <li class="teaser-card"><img src="img/flair-clean/coffee-cups-set.jpg" width="600" height="600" loading="lazy" alt="Starbucks cups flair"><span>Starbucks cups</span></li>
+        <li class="teaser-card"><img src="img/flair-clean/music-set.jpg" width="600" height="600" loading="lazy" alt="Guitars & speaker flair"><span>Guitars & speaker</span></li>
+        <li class="teaser-card"><img src="img/flair-clean/toy-story-set.jpg" width="600" height="600" loading="lazy" alt="Toy Story flair"><span>Toy Story</span></li>
+      </ul>
+      <p class="teaser-cta"><button type="button" class="btn btn--secondary btn--big" data-open-wizard>Start your order &amp; pick flair</button></p>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="section section--yellow" id="pricing" aria-labelledby="pricing-title">
+    <div class="section__inner">
+      <h2 id="pricing-title" class="section__title">Pricing — always flat, always simple</h2>
+      <div class="price-cards">
+        <article class="price-card"><span class="price-card__days">2 days</span><span class="price-card__amt">$90</span></article>
+        <article class="price-card"><span class="price-card__days">3 days</span><span class="price-card__amt">$100</span></article>
+        <article class="price-card"><span class="price-card__days">4 days</span><span class="price-card__amt">$110</span></article>
+        <article class="price-card"><span class="price-card__days">5 days</span><span class="price-card__amt">$120</span></article>
+      </div>
+      <p class="price-note">Every sign includes unlimited flair, setup the night before, and pickup after. Pay after it's up.</p>
+      <div class="towns-chips" id="towns-chips" aria-label="Service towns"></div>
+      <p class="price-note price-note--strong" id="travel-note"></p>
+      <p class="teaser-cta"><button type="button" class="btn btn--primary btn--big" data-open-wizard>Order Your Sign</button></p>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="section section--purple" id="reviews" aria-labelledby="reviews-title">
+    <div class="section__inner">
+      <h2 id="reviews-title" class="section__title">What folks say</h2>
+      <div class="reviews">
+        <figure class="review-card">
+          <div class="review-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote>"Gavin did a great job for my daughter's birthday yard sign! I've been using lawn bombs for years and they always do a wonderful job! Thank you!!"</blockquote>
+          <figcaption>— Darci S., Google review</figcaption>
+        </figure>
+        <figure class="review-card">
+          <div class="review-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote>"This experience was awesome!! Fast service, reasonable price, great customer service, and even takes down the signs!! I will absolutely be using them again!!"</blockquote>
+          <figcaption>— Leslie G., Google review</figcaption>
+        </figure>
+        <figure class="review-card">
+          <div class="review-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote>"Awesome signs!"</blockquote>
+          <figcaption>— Jay B., Google review</figcaption>
+        </figure>
       </div>
     </div>
   </section>
 
-  <section class="block" id="gallery" style="padding-top:8px">
-    <div class="wrap">
-      <p class="eyebrow">Gallery</p>
-      <h2 class="h2">Real signs, real yards</h2>
-      <p class="lead">Recent LawnBombs setups around Lee County. Tap a photo to see it bigger.</p>
-      <div class="grid" id="galleryGrid"></div>
-    </div>
-  </section>
-
-  <section class="block" id="pricing">
-    <div class="wrap">
-      <p class="eyebrow">Pricing</p>
-      <h2 class="h2">One simple price</h2>
-      <p class="lead">Every sign type is the same flat price. Birthdays, babies, grads, weddings, welcome homes.</p>
-      <div class="pricegrid">
-        <div class="pricecard">
-          <div class="big">$90<small>flat</small></div>
-          <ul class="incl">
-            <li>Personalized name, age, colors and theme</li>
-            <li>All flair included, pick as many as you like</li>
-            <li>2 days in the yard</li>
-            <li>Setup the night before, and pickup</li>
-            <li>Pay after it's up</li>
-            <li>No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20)</li>
-          </ul>
-        </div>
-        <div class="pricecard" style="border-color:var(--line)">
-          <h3 style="font-size:1.3rem">Want it up longer?</h3>
-          <p class="fineprint" style="margin-top:4px">Extra days are +$10/day, up to 5 days total.</p>
-          <div class="daysPick" role="radiogroup" aria-label="Days in the yard">
-            <input type="radio" name="pdays" id="pd2" value="2" checked><label for="pd2">2 days<b>$90</b></label>
-            <input type="radio" name="pdays" id="pd3" value="3"><label for="pd3">3 days<b>$100</b></label>
-            <input type="radio" name="pdays" id="pd4" value="4"><label for="pd4">4 days<b>$110</b></label>
-            <input type="radio" name="pdays" id="pd5" value="5"><label for="pd5">5 days<b>$120</b></label>
-          </div>
-          <div class="totalLine" aria-live="polite"><span id="pDaysLabel">2 days in the yard (included)</span><span class="amt" id="pTotal">$90</span></div>
-          <a class="bigbtn text" style="margin-top:14px" href="#order">Book this</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="block orderBg" id="order">
-    <div class="wrap">
-      <div class="formcol">
-        <p class="eyebrow">Order</p>
-        <h2 class="h2">Book your sign</h2>
-        <p class="lead">No payment now. We'll text you to confirm your date. Prefer texting? <a class="smsLink" href="sms:+12394942377">Text 239-494-2377</a>.</p>
-
-        <form id="orderForm" novalidate>
-          <section class="card">
-            <h3><span class="stepn">1</span>About you</h3>
-            <p class="sub">So we can text you to confirm your date.</p>
-            <div class="field">
-              <label for="customerName">Your name <span class="req" aria-hidden="true">*</span></label>
-              <input type="text" id="customerName" name="customerName" autocomplete="name" autocapitalize="words" enterkeyhint="next" required aria-describedby="err-customerName">
-              <div class="err" id="err-customerName" aria-live="polite"></div>
-            </div>
-            <div class="row">
-              <div class="field">
-                <label for="phone">Mobile phone <span class="req" aria-hidden="true">*</span></label>
-                <input type="tel" id="phone" name="phone" autocomplete="tel-national" inputmode="tel" placeholder="239-555-0123" maxlength="16" enterkeyhint="next" required aria-describedby="err-phone">
-                <div class="err" id="err-phone" aria-live="polite"></div>
-              </div>
-              <div class="field">
-                <label for="email">Email <span class="opt">(optional)</span></label>
-                <input type="email" id="email" name="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com" enterkeyhint="next" aria-describedby="err-email">
-                <div class="err" id="err-email" aria-live="polite"></div>
-              </div>
-            </div>
-          </section>
-
-          <section class="card">
-            <h3><span class="stepn">2</span>The celebration</h3>
-            <p class="sub">What are we celebrating, and when?</p>
-            <fieldset>
-              <legend>Celebration type</legend>
-              <div class="chips">
-                <input type="radio" name="celebrationType" id="t1" value="Birthday" checked><label for="t1">🎂 Birthday</label>
-                <input type="radio" name="celebrationType" id="t2" value="Welcome home"><label for="t2">🏡 Welcome home</label>
-                <input type="radio" name="celebrationType" id="t3" value="Baby"><label for="t3">🍼 Baby</label>
-                <input type="radio" name="celebrationType" id="t4" value="Graduation"><label for="t4">🎓 Graduation</label>
-                <input type="radio" name="celebrationType" id="t5" value="Open house"><label for="t5">🔑 Open house</label>
-                <input type="radio" name="celebrationType" id="t7" value="Wedding"><label for="t7">💍 Wedding</label>
-                <input type="radio" name="celebrationType" id="t6" value="Other"><label for="t6">✨ Other</label>
-              </div>
-            </fieldset>
-            <div class="row">
-              <div class="field">
-                <label for="signName">Name on sign <span class="req" aria-hidden="true">*</span></label>
-                <input type="text" id="signName" name="signName" placeholder="e.g. Emma" autocapitalize="words" required aria-describedby="err-signName">
-                <div class="err" id="err-signName" aria-live="polite"></div>
-              </div>
-              <div class="field">
-                <label for="age">Age <span class="opt">(optional)</span></label>
-                <input type="text" id="age" name="age" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="e.g. 8" aria-describedby="err-age">
-                <div class="err" id="err-age" aria-live="polite"></div>
-              </div>
-            </div>
-            <div class="field">
-              <label for="celebrationDate">Date of celebration <span class="req" aria-hidden="true">*</span></label>
-              <input type="date" id="celebrationDate" name="celebrationDate" required aria-describedby="err-celebrationDate hint-date">
-              <div class="hint" id="hint-date">We set it up the night before your event, so it's ready when you wake up.</div>
-              <div class="err" id="err-celebrationDate" aria-live="polite"></div>
-            </div>
-            <div class="field">
-              <label for="yardDays">How long do you want the sign up?</label>
-              <select id="yardDays" name="yardDays" aria-describedby="hint-days hint-pickup">
-                <option value="2" selected>2 days (included) &middot; $90</option>
-                <option value="3">3 days (+$10) &middot; $100</option>
-                <option value="4">4 days (+$20) &middot; $110</option>
-                <option value="5">5 days (+$30) &middot; $120</option>
-              </select>
-              <div class="hint" id="hint-days">$90 includes 2 days in the yard (your event day and the next day). Extra days are +$10/day, up to 5 days. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).</div>
-              <div class="hint" id="hint-pickup" aria-live="polite">We pick it up the next day.</div>
-            </div>
-            <div class="field" style="margin-bottom:0">
-              <label for="address">Address where the sign goes <span class="req" aria-hidden="true">*</span></label>
-              <input type="text" id="address" name="address" autocomplete="street-address" placeholder="Street, city, ZIP" required aria-describedby="err-address">
-              <div class="hint">Only used for setup. Never shown anywhere.</div>
-              <div class="err" id="err-address" aria-live="polite"></div>
-            </div>
-            <div class="field" style="margin:16px 0 0">
-              <label for="town">Town <span class="req" aria-hidden="true">*</span></label>
-              <select id="town" name="town" required aria-describedby="err-town hint-town">
-                <option value="" selected disabled>Choose your town</option>
-                <option>Estero</option>
-                <option>Bonita Springs</option>
-                <option>Fort Myers</option>
-                <option>San Carlos Park</option>
-                <option>Three Oaks</option>
-                <option>Gateway</option>
-                <option value="Lehigh Acres">Lehigh Acres (+$15 travel)</option>
-                <option value="Naples">Naples (+$20 travel)</option>
-                <option value="Fort Myers Beach">Fort Myers Beach (+$20 travel)</option>
-                <option value="Cape Coral" disabled>Cape Coral (coming December)</option>
-                <option value="Other">Other (text us)</option>
-              </select>
-              <div class="hint" id="hint-town">No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).</div>
-              <div class="err" id="err-town" aria-live="polite"></div>
-            </div>
-          </section>
-
-          <section class="card" id="flair">
-            <h3><span class="stepn">3</span>Make it theirs</h3>
-            <p class="sub">Tell us what they love, then pick your flair.</p>
-            <div class="field">
-              <label for="colors">Colors <span class="req" aria-hidden="true">*</span></label>
-              <input type="text" id="colors" name="colors" placeholder="e.g. pink and purple" required aria-describedby="err-colors">
-              <div class="err" id="err-colors" aria-live="polite"></div>
-            </div>
-            <div class="field">
-              <label for="theme">Theme or interests <span class="opt">(optional)</span></label>
-              <input type="text" id="theme" name="theme" placeholder="e.g. unicorns, soccer, golf, dinosaurs">
-            </div>
-            <div class="field" id="flairField">
-              <div class="flairHead">
-                <span class="label" id="flairLabel" style="margin:0">Pick your flair <span class="opt">(optional)</span></span>
-                <button type="button" class="linkbtn" id="flairClear" hidden>Clear all</button>
-              </div>
-              <p class="flairIncl">All flair included, pick as many as you like.</p>
-              <div class="flairgrid" id="flairGrid" role="group" aria-labelledby="flairLabel"></div>
-              <div class="flaircount" id="flairCount" aria-live="polite"></div>
-            </div>
-            <div class="field" style="margin-bottom:0">
-              <label for="notes">Notes <span class="opt">(optional)</span></label>
-              <textarea id="notes" name="notes" placeholder="Gate code, sprinkler spots, where to place it, it's a surprise..."></textarea>
-            </div>
-          </section>
-
-          <section class="card">
-            <h3><span class="stepn">4</span>One last thing</h3>
-            <p class="sub">It helps a small business a lot.</p>
-            <div class="field">
-              <label for="heardFrom">How did you hear about us? <span class="req" aria-hidden="true">*</span></label>
-              <select id="heardFrom" name="heardFrom" required aria-describedby="err-heardFrom">
-                <option value="" selected disabled>Choose one</option>
-                <option>Saw a sign in a yard</option>
-                <option>Friend or neighbor</option>
-                <option>Facebook</option>
-                <option>Instagram</option>
-                <option>Nextdoor</option>
-                <option>Google</option>
-                <option>Realtor</option>
-                <option>School or PTO</option>
-                <option>Past customer</option>
-                <option>Other</option>
-              </select>
-              <div class="err" id="err-heardFrom" aria-live="polite"></div>
-            </div>
-            <div class="hp" aria-hidden="true">
-              <label for="website">Leave this empty</label>
-              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
-            </div>
-            <div class="orderTotal" aria-live="polite"><span id="oDaysLabel">2 days in the yard, all flair included</span><span class="amt" id="oTotal">$90</span></div>
-            <div class="formError" id="formError" role="alert"></div>
-            <button type="submit" class="btn" id="submitBtn">Request my sign &middot; $90</button>
-            <p class="fine">No payment now. You pay after the sign is up, by cash, Zelle or Venmo.</p>
-          </section>
-        </form>
-
-        <section class="card" id="thanks" tabindex="-1" aria-live="polite">
-          <div class="party" aria-hidden="true">🎉</div>
-          <h3>Thank you, <span id="tyName">friend</span>!</h3>
-          <p>Your request is in. We'll text you shortly to confirm your date and details.</p>
-          <div class="summary" id="summary"></div>
-          <p>Need it fast, or have a question?</p>
-          <a class="bigbtn text" href="sms:+12394942377" aria-label="Text LawnBombs at 239-494-2377"><svg><use href="#i-sms"/></svg><span>Text 239-494-2377</span></a>
-          <button type="button" class="btn share" id="shareBtn">Share LawnBombs with a friend 🎉</button>
-          <button type="button" class="btn ghost" id="another">Order another sign</button>
-          <div class="previewNote">Preview mode: this order was not sent.</div>
-        </section>
-      </div>
-    </div>
-  </section>
-
-  <section class="block" id="reviews" hidden>
-    <div class="wrap">
-      <p class="eyebrow">Reviews</p>
-      <h2 class="h2">What neighbors say</h2>
-      <div class="reviews" id="reviewList" style="margin-top:14px"></div>
-    </div>
-  </section>
-
-  <section class="block" id="faq">
-    <div class="wrap">
-      <p class="eyebrow">FAQ</p>
-      <h2 class="h2">Good questions</h2>
-      <div class="faq" style="margin-top:14px">
-        <details open>
+  <!-- FAQ -->
+  <section class="section section--cream" id="faq" aria-labelledby="faq-title">
+    <div class="section__inner">
+      <h2 id="faq-title" class="section__title">Questions</h2>
+      <div class="faq-list">
+        <details class="faq-item">
           <summary>What's included in the $90?</summary>
-          <p>Everything: a personalized sign with the name, age, colors and theme you want, all the flair you pick, setup the night before, 2 days in the yard, and pickup. Same price for every sign type. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).</p>
+          <p>Your custom yard greeting sign plus any flair pieces you want — characters, sports, numbers, you name it. All flair is included at no extra cost, for any number of pieces.</p>
         </details>
-        <details>
-          <summary>Can I keep it up longer?</summary>
-          <p>Yes. Extra days are +$10/day, up to 5 days total: 3 days is $100, 4 days is $110, 5 days is $120. In Lehigh Acres add the $15 travel fee ($105, $115, $125, $135 for 2 to 5 days). In Naples or Fort Myers Beach add the $20 travel fee ($110, $120, $130, $140 for 2 to 5 days). We pick it up after your last day.</p>
+        <details class="faq-item">
+          <summary>How many days do I get?</summary>
+          <p>The $90 price includes 2 days in your yard. Need it longer? Extra days are +$10 each, up to 5 days total: 2 days $90, 3 days $100, 4 days $110, 5 days $120.</p>
         </details>
-        <details>
-          <summary>When do you set up and pick up?</summary>
-          <p>We set it up the night before your event, so it's there when you wake up. $90 covers 2 days in the yard (your event day and the next day), then we pick it up. You don't need to be home.</p>
+        <details class="faq-item">
+          <summary>When do you set up?</summary>
+          <p>We set up the night before your event, so everything is ready and waiting first thing in the morning.</p>
         </details>
-        <details>
-          <summary>How do I pay?</summary>
-          <p>Nothing up front. You pay after it's up, by cash, Zelle or Venmo. No deposit. No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20).</p>
+        <details class="faq-item">
+          <summary>When do I pay?</summary>
+          <p>You pay after it's up — once your sign is in the yard. We take it down after your event.</p>
         </details>
-        <details>
-          <summary>How much flair can I pick?</summary>
-          <p>As much as you like. All flair is included in the $90, so picking more never changes the price.</p>
+        <details class="faq-item">
+          <summary>Which towns do you serve? Is there a travel fee?</summary>
+          <p id="faq-towns"><!-- rendered from TOWNS by app.js --></p>
         </details>
-        <details>
-          <summary>What areas do you cover?</summary>
-          <p>Estero, Bonita Springs, Fort Myers, San Carlos Park, Three Oaks and Gateway, with no travel fee. Lehigh Acres is +$15 travel, and Naples and Fort Myers Beach are +$20 travel. Cape Coral is coming in December (not bookable yet). Somewhere else nearby? <a class="smsLink" href="sms:+12394942377">Text us</a> and ask.</p>
+        <details class="faq-item">
+          <summary>Can I pick more than one flair piece?</summary>
+          <p>Yes! Pick as many as you like — there's no limit, and every piece is included in your $90.</p>
         </details>
-        <details>
+        <details class="faq-item">
           <summary>How do I reach you?</summary>
-          <p>Text <a class="smsLink" href="sms:+12394942377">239-494-2377</a> anytime. We're text only, so that's the fastest way to get an answer, a last-minute booking, or a change to your order.</p>
-        </details>
-        <details>
-          <summary>How far ahead should I book?</summary>
-          <p>The sooner the better, since weekends fill up. Need it last minute? <a class="smsLink" href="sms:+12394942377">Text us</a> and we'll do our best.</p>
-        </details>
-        <details>
-          <summary>Can it be a surprise?</summary>
-          <p>Absolutely. Since we set it up the night before, it's waiting when they wake up. Add "it's a surprise" in the notes and we'll only contact you.</p>
-        </details>
-        <details>
-          <summary>Will it hurt my lawn or sprinklers?</summary>
-          <p>No. The signs go on small stakes pushed a few inches into the ground. If you have sprinkler heads or lines to avoid, mention them in the notes.</p>
-        </details>
-        <details>
-          <summary>What if the weather is bad?</summary>
-          <p>If a storm is headed our way, we'll text you before setup to work out the best plan.</p>
+          <p>Text 239-494-2377 — that's the only way to reach us, and we'll text you right back.</p>
         </details>
       </div>
     </div>
   </section>
+
 </main>
 
-<footer>
-  <div class="wrap">
-    <p class="brand">Lawn<span>Bombs</span></p>
-    <p>Celebration yard signs &middot; Lee County, FL<br>Estero &middot; Bonita Springs &middot; Fort Myers &middot; San Carlos Park &middot; Three Oaks &middot; Gateway &middot; Lehigh Acres &middot; Naples &middot; Fort Myers Beach</p>
-    <p>No travel fee except Lehigh Acres (+$15), Naples and Fort Myers Beach (+$20) &middot; Cape Coral coming in December</p>
-    <a class="bigbtn text" href="sms:+12394942377" aria-label="Text LawnBombs at 239-494-2377"><svg><use href="#i-sms"/></svg><span>Text 239-494-2377</span></a>
-    <p>Text <a id="footText" class="smsLink" href="sms:+12394942377">239-494-2377</a> &middot; $90 flat, 2 days in the yard</p>
-    <div class="social" id="social" hidden></div>
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__brand">LawnBombs · Lee County, FL</p>
+    <a class="site-footer__text" href="sms:+12394942377">Text 239-494-2377</a>
+    <p class="site-footer__towns" id="footer-towns"></p>
   </div>
 </footer>
 
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Sign photo" aria-hidden="true">
-  <button type="button" class="lbbtn lbclose" id="lbClose" aria-label="Close photo">&times;</button>
-  <img id="lbImg" alt="">
-  <p id="lbCap"></p>
-  <div class="lbcount" id="lbCount"></div>
-  <div class="lbctl">
-    <button type="button" class="lbbtn" id="lbPrev" aria-label="Previous photo">&lsaquo;</button>
-    <button type="button" class="lbbtn" id="lbNext" aria-label="Next photo">&rsaquo;</button>
+<!-- ============== ORDER WIZARD ============== -->
+<div class="wizard" id="order-wizard" hidden role="dialog" aria-modal="true" aria-labelledby="wizard-step-title">
+
+  <div class="wizard-panel">
+
+    <div class="wizard-header">
+      <button type="button" class="wizard-close" id="wizard-close" aria-label="Close order form">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="wizard-progress-wrap">
+        <div class="wizard-progress-track"><div class="wizard-progress-fill" id="wizard-progress-fill"></div></div>
+        <p class="wizard-step-label" id="wizard-step-title">Step 1 of 5 — Occasion &amp; date</p>
+      </div>
+    </div>
+
+    <form id="order-form" novalidate>
+
+      <div class="wizard-body">
+
+        <!-- STEP 1 -->
+        <section class="wizard-step" data-step="1">
+          <h2 class="step-heading">What are we celebrating?</h2>
+          <div class="occasion-grid" id="occasion-grid" role="group" aria-label="Occasion">
+            <!-- tiles injected by app.js -->
+          </div>
+          <select id="occasion" class="visually-hidden-field" aria-hidden="true" tabindex="-1">
+            <option value="">Select an occasion</option>
+            <option>Birthday</option>
+            <option>Welcome Home</option>
+            <option>Baby / It's a Boy / It's a Girl</option>
+            <option>Graduation</option>
+            <option>Open House</option>
+            <option>Holiday</option>
+            <option>Retirement</option>
+            <option>Other</option>
+          </select>
+
+          <div class="field">
+            <label for="event-date">Event date</label>
+            <input type="date" id="event-date" name="event-date" required>
+            <p class="field-error" id="err-event-date" hidden>Please choose your event date.</p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="honoree-name">Honoree name</label>
+              <input type="text" id="honoree-name" name="honoree-name" placeholder="Who's it for?" autocomplete="off">
+            </div>
+            <div class="field field-narrow">
+              <label for="honoree-age">Age <span class="optional">(optional)</span></label>
+              <input type="number" id="honoree-age" name="honoree-age" min="0" max="120" inputmode="numeric">
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2 -->
+        <section class="wizard-step" data-step="2">
+          <div class="flair-sticky-head">
+            <h2 class="step-heading">Pick your flair</h2>
+            <p class="flair-count" id="flair-count">0 picked — all included</p>
+            <div class="flair-search" role="search">
+              <label for="flair-search" class="flair-search__label">Search flair</label>
+              <div class="flair-search__box">
+                <svg class="flair-search__icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M15.5 15.5L21 21" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+                <input id="flair-search" class="flair-search__input" type="search" placeholder="Search flair: baby, mario, coffee…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" aria-controls="flair-grid">
+                <button type="button" id="flair-search-clear" class="flair-search__clear" aria-label="Clear search" hidden>&times;</button>
+              </div>
+            </div>
+            <div class="chip-row" id="flair-chips" role="group" aria-label="Flair category">
+              <!-- chips injected by app.js -->
+            </div>
+          </div>
+          <p id="flair-empty" class="flair-search-empty" role="status" hidden>No flair found — <a href="sms:+12394942377">text 239-494-2377</a> for custom</p>
+          <div class="flair-grid" id="flair-grid">
+            <!-- cards injected by app.js -->
+          </div>
+        </section>
+
+        <!-- STEP 3 -->
+        <section class="wizard-step" data-step="3">
+          <h2 class="step-heading">Make it yours</h2>
+          <div class="field">
+            <label for="theme">Theme <span class="optional">(optional)</span></label>
+            <input type="text" id="theme" name="theme" placeholder="e.g. Dinosaurs, Under the sea">
+          </div>
+          <div class="field">
+            <label for="colors">Colors <span class="optional">(optional)</span></label>
+            <input type="text" id="colors" name="colors" placeholder="e.g. Pink &amp; gold">
+          </div>
+          <div class="field">
+            <label for="notes">Notes <span class="optional">(optional)</span></label>
+            <textarea id="notes" name="notes" rows="4" placeholder="Anything else we should know?"></textarea>
+          </div>
+        </section>
+
+        <!-- STEP 4 -->
+        <section class="wizard-step" data-step="4">
+          <h2 class="step-heading">Where &amp; when</h2>
+          <div class="field">
+            <label for="address">Street address</label>
+            <input type="text" id="address" name="address" autocomplete="street-address" required>
+            <p class="field-error" id="err-address" hidden>Please add the street address.</p>
+          </div>
+          <div class="field">
+            <label for="town">Town</label>
+            <select id="town" name="town" required>
+              <!-- options injected by app.js -->
+            </select>
+            <p class="field-hint" id="town-fee-hint"></p>
+            <p class="field-error" id="err-town" hidden>Please choose your town.</p>
+          </div>
+
+          <div class="field">
+            <label id="days-label">Days in yard</label>
+            <div class="stepper" role="group" aria-labelledby="days-label">
+              <button type="button" class="stepper-btn" id="days-minus" aria-label="Fewer days">−</button>
+              <span class="stepper-value" id="days-display">2 days</span>
+              <button type="button" class="stepper-btn" id="days-plus" aria-label="More days">+</button>
+            </div>
+            <select id="days" class="visually-hidden-field" aria-hidden="true" tabindex="-1">
+              <option value="2" selected>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="customer-name">Your name</label>
+            <input type="text" id="customer-name" name="customer-name" autocomplete="name" required>
+            <p class="field-error" id="err-customer-name" hidden>Please add your name.</p>
+          </div>
+          <div class="field">
+            <label for="mobile">Your mobile number</label>
+            <input type="tel" id="mobile" name="mobile" autocomplete="tel" inputmode="tel" required>
+            <p class="field-error" id="err-mobile" hidden>Please add a mobile number so we can text to confirm.</p>
+          </div>
+        </section>
+
+        <!-- STEP 5 -->
+        <section class="wizard-step" data-step="5">
+          <h2 class="step-heading">Review your order</h2>
+          <div class="review-summary" id="review-summary">
+            <!-- rendered by app.js -->
+          </div>
+          <div class="review-price-breakdown" id="review-breakdown">
+            <!-- rendered by app.js -->
+          </div>
+          <button type="submit" class="btn btn--primary btn--big btn--full" id="submit-order">Submit order</button>
+          <p class="form-footnote">Questions? <a href="sms:+12394942377">Text 239-494-2377</a></p>
+        </section>
+
+      </div>
+
+      <!-- THANK YOU -->
+      <div class="thanks" id="thanks" hidden>
+        <svg viewBox="0 0 24 24" width="48" height="48" aria-hidden="true" focusable="false" class="thanks-check"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 12.5l3.3 3.3L17 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h2 id="thanks-title">Preview only</h2>
+        <p class="preview-notice" id="preview-notice"><strong>Preview only: this order wasn't sent.</strong> To book for real, <a href="sms:+12394942377">text 239-494-2377</a>.</p>
+        <div class="thanks-summary" id="thanks-summary"></div>
+        <button type="button" class="btn btn--secondary" id="thanks-close">Close</button>
+      </div>
+
+      <!-- STICKY TOTAL BAR -->
+      <div class="wizard-totalbar" id="wizard-totalbar">
+        <div class="totalbar-amount">
+          <span class="totalbar-label">Total</span>
+          <span class="totalbar-value" id="total">$90</span>
+        </div>
+        <div class="totalbar-actions">
+          <button type="button" class="btn" id="wizard-back">Back</button>
+          <button type="button" class="btn btn--primary" id="wizard-next">Next</button>
+        </div>
+      </div>
+
+    </form>
   </div>
 </div>
-<script>
-(function () {
-  var $ = function (id) { return document.getElementById(id); };
-  var form = $("orderForm");
 
-  // ----- TEST MODE: preview copies never POST -----
-  var params = new URLSearchParams(location.search);
-  var host = location.hostname.toLowerCase();
-  var TEST_MODE = params.has("preview") || LIVE_HOSTS.indexOf(host) === -1;
-  window.LB_TEST_MODE = TEST_MODE;
-  if (TEST_MODE) document.body.classList.add("preview");
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lightbox__close" id="lightbox-close" aria-label="Close photo">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
 
-  // ----- Contact: text only. Every contact link is sms: -----
-  document.querySelectorAll('a[href^="sms:"]').forEach(function (a) { a.href = "sms:" + PHONE_LINK; });
-
-  // ----- Gallery + lightbox -----
-  var gi = 0, lb = $("lightbox"), lbImg = $("lbImg"), lastFocus = null;
-  GALLERY.forEach(function (g, i) {
-    var fig = document.createElement("figure"), btn = document.createElement("button"), img = document.createElement("img"), cap = document.createElement("figcaption");
-    fig.className = "tile";
-    img.src = "img/gallery/thumb/" + g.file; img.width = 480; img.height = Math.round(g.h * 480 / g.w);
-    img.alt = "LawnBombs sign: " + g.caption; img.loading = "lazy"; img.decoding = "async";
-    btn.type = "button"; btn.setAttribute("aria-label", "See bigger: " + g.caption);
-    btn.addEventListener("click", function () { openLightbox(i); });
-    cap.textContent = g.caption;
-    btn.appendChild(img); fig.appendChild(btn); fig.appendChild(cap);
-    $("galleryGrid").appendChild(fig);
-  });
-  function showPhoto(i) {
-    gi = (i + GALLERY.length) % GALLERY.length;
-    var g = GALLERY[gi];
-    lbImg.src = "img/gallery/" + g.file; lbImg.alt = "LawnBombs sign: " + g.caption;
-    $("lbCap").textContent = g.caption; $("lbCount").textContent = (gi + 1) + " of " + GALLERY.length;
-  }
-  function openLightbox(i) {
-    lastFocus = document.activeElement; showPhoto(i);
-    lb.classList.add("open"); lb.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; $("lbClose").focus();
-  }
-  function closeLightbox() {
-    lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = "";
-    if (lastFocus) lastFocus.focus({ preventScroll: true });
-  }
-  $("lbClose").addEventListener("click", closeLightbox);
-  $("lbPrev").addEventListener("click", function () { showPhoto(gi - 1); });
-  $("lbNext").addEventListener("click", function () { showPhoto(gi + 1); });
-  lb.addEventListener("click", function (e) { if (e.target === lb) closeLightbox(); });
-  document.addEventListener("keydown", function (e) {
-    if (!lb.classList.contains("open")) return;
-    if (e.key === "Escape") closeLightbox();
-    if (e.key === "ArrowLeft") showPhoto(gi - 1);
-    if (e.key === "ArrowRight") showPhoto(gi + 1);
-  });
-  var tx = null;
-  lb.addEventListener("touchstart", function (e) { tx = e.touches[0].clientX; }, { passive: true });
-  lb.addEventListener("touchend", function (e) {
-    if (tx === null) return;
-    var dx = e.changedTouches[0].clientX - tx; tx = null;
-    if (Math.abs(dx) > 40) showPhoto(gi + (dx < 0 ? 1 : -1));
-  });
-
-  // ----- Flair picker: multi-select, no limit, never changes the price -----
-  FLAIR.forEach(function (f) {
-    var b = document.createElement("button"), im = document.createElement("img"), s = document.createElement("span");
-    b.type = "button"; b.className = "flair"; b.setAttribute("aria-pressed", "false"); b.dataset.label = f.label;
-    im.src = "img/flair/" + f.key + ".jpg"; im.alt = ""; im.loading = "lazy"; im.decoding = "async"; im.width = 240; im.height = 240;
-    s.textContent = f.label;
-    b.appendChild(im); b.appendChild(s);
-    b.addEventListener("click", function () {
-      b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
-      flairChanged();
-    });
-    $("flairGrid").appendChild(b);
-  });
-  function selectedFlair() {
-    return Array.from(document.querySelectorAll('.flair[aria-pressed="true"]'), function (b) { return b.dataset.label; });
-  }
-  function flairChanged() {
-    var picked = selectedFlair();
-    $("flairCount").textContent = picked.length ? picked.length + " picked (all included): " + picked.join(", ") : "";
-    $("flairClear").hidden = !picked.length;
-    updatePrice();
-  }
-  $("flairClear").addEventListener("click", function () {
-    document.querySelectorAll(".flair").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
-    flairChanged();
-  });
-
-  // ----- Reviews (real ones only, from config) + social -----
-  REVIEWS.forEach(function (r) {
-    var box = document.createElement("figure"), stars = document.createElement("div"), p = document.createElement("p"), who = document.createElement("div");
-    box.className = "review"; stars.className = "stars"; who.className = "who";
-    stars.textContent = "\u2605\u2605\u2605\u2605\u2605"; stars.setAttribute("aria-label", "5 stars");
-    p.textContent = "\u201c" + r.text + "\u201d";
-    who.textContent = "\u2014 " + r.name + (r.source ? " \u00b7 " + r.source : "");
-    box.appendChild(stars); box.appendChild(p); box.appendChild(who);
-    $("reviewList").appendChild(box);
-  });
-  if (REVIEWS.length) $("reviews").hidden = false;
-  else document.querySelectorAll("[data-reviews]").forEach(function (a) { a.remove(); });
-  [["Facebook", FACEBOOK_URL], ["Instagram", INSTAGRAM_URL]].forEach(function (s) {
-    if (!s[1]) return;
-    var a = document.createElement("a"); a.href = s[1]; a.textContent = s[0]; a.target = "_blank"; a.rel = "noopener";
-    $("social").appendChild(a); $("social").hidden = false;
-  });
-
-  // ----- Nav: highlight the section on screen -----
-  if ("IntersectionObserver" in window) {
-    var links = {};
-    document.querySelectorAll("#navlinks a").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (e.isIntersecting && links[e.target.id]) {
-          Object.keys(links).forEach(function (k) { links[k].classList.remove("on"); });
-          links[e.target.id].classList.add("on");
-        }
-      });
-    }, { rootMargin: "-45% 0px -50% 0px" });
-    Object.keys(links).forEach(function (id) { if ($(id)) io.observe($(id)); });
-  }
-
-  // ----- Share (after ordering) -----
-  var SHARE_URL = "https://lawnbombsfl.com/";
-  var SHARE_TEXT = "Check out LawnBombs! Custom celebration yard signs around Estero, Bonita and Fort Myers, $90 flat:";
-  $("shareBtn").addEventListener("click", function () {
-    if (navigator.share) navigator.share({ title: "LawnBombs", text: SHARE_TEXT, url: SHARE_URL }).catch(function () {});
-    else location.href = "sms:?&body=" + encodeURIComponent(SHARE_TEXT + " " + SHARE_URL);
-  });
-
-  // ----- Dates (local time) -----
-  function iso(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
-  function todayISO() { return iso(new Date()); }
-  function earliestISO() { var d = new Date(); d.setDate(d.getDate() + MIN_DAYS_AHEAD); return iso(d); }
-  function shiftISO(v, n) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return "";
-    var p = v.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2]); d.setDate(d.getDate() + n); return iso(d);
-  }
-  function prettyDate(v) {
-    if (!v) return "";
-    var p = v.split("-");
-    return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
-  }
-  $("celebrationDate").min = earliestISO();
-
-  // ----- Price: $90 + $10 per extra day. Flair never changes it. -----
-  function currentType() { var r = form.querySelector('input[name="celebrationType"]:checked'); return r ? r.value : "Birthday"; }
-  function currentDays() {
-    var n = parseInt($("yardDays").value, 10);
-    if (!(n >= INCLUDED_DAYS)) n = INCLUDED_DAYS;
-    return Math.min(n, MAX_DAYS);
-  }
-  function extraDays() { return currentDays() - INCLUDED_DAYS; }
-  function currentTown() { return $("town").value || ""; }
-  function travelFee() { return TRAVEL_FEES[currentTown()] || 0; }
-  function basePrice(days) { return PRICE_STANDARD + (days - INCLUDED_DAYS) * EXTRA_DAY_PRICE; }
-  function currentPrice() { return basePrice(currentDays()) + travelFee(); }   // includes the town travel fee (Lehigh Acres $15, Naples / Fort Myers Beach $20)
-  function daysLabel() { var x = extraDays(); return currentDays() + " days" + (x ? " (+$" + x * EXTRA_DAY_PRICE + ")" : " (included)"); }
-  function pickupISO() { return shiftISO($("celebrationDate").value, currentDays() - 1); }   // 2 days -> picked up the next day
-  function setupISO() { return shiftISO($("celebrationDate").value, -1); }                   // the night before
-  function pickupText() {
-    var p = pickupISO(), after = currentDays() - 1;
-    if (p) return "Set up the night before (" + prettyDate(setupISO()) + "), picked up " + prettyDate(p) + ".";
-    return "We set it up the night before and pick it up " + (after === 1 ? "the day after your event" : after + " days after your event") + ".";
-  }
-  function updatePrice() {
-    var price = currentPrice(), days = currentDays();
-    $("submitBtn").textContent = "Request my sign \u00b7 $" + price;
-    $("hint-pickup").textContent = pickupText() + " Total: $" + price;
-    $("oTotal").textContent = "$" + price;
-    var fee = travelFee(), feeTxt = fee ? " + $" + fee + " " + currentTown() + " travel" : "";
-    $("oDaysLabel").textContent = daysLabel().replace(" days", " days in the yard") + feeTxt + ", all flair included";
-    $("pTotal").textContent = "$" + price;
-    $("pDaysLabel").textContent = days + " days in the yard" + (extraDays() ? " (+$" + extraDays() * EXTRA_DAY_PRICE + ")" : " (included)") + feeTxt;
-    for (var dd = INCLUDED_DAYS; dd <= MAX_DAYS; dd++) {
-      var lab = document.querySelector('label[for="pd' + dd + '"] b'); if (lab) lab.textContent = "$" + (basePrice(dd) + fee);
-    }
-    var pr = $("pd" + days); if (pr && !pr.checked) pr.checked = true;
-  }
-  // Pricing-section day picker and the form's select stay in sync.
-  document.querySelectorAll('input[name="pdays"]').forEach(function (r) {
-    r.addEventListener("change", function () { $("yardDays").value = r.value; updatePrice(); });
-  });
-  form.querySelectorAll('input[name="celebrationType"]').forEach(function (r) { r.addEventListener("change", updatePrice); });
-  $("yardDays").addEventListener("change", updatePrice);
-  $("town").addEventListener("change", updatePrice);
-  $("celebrationDate").addEventListener("change", updatePrice);
-  $("celebrationDate").addEventListener("input", updatePrice);
-  updatePrice();
-
-  // ----- Phone formatting -> 239-555-0123 -----
-  function phoneDigits(v) { var d = String(v).replace(/\D/g, ""); if (d.length === 11 && d.charAt(0) === "1") d = d.slice(1); return d; }
-  function formatPhone(d) {
-    d = d.slice(0, 10);
-    return d.length > 6 ? d.slice(0, 3) + "-" + d.slice(3, 6) + "-" + d.slice(6) : d.length > 3 ? d.slice(0, 3) + "-" + d.slice(3) : d;
-  }
-  $("phone").addEventListener("input", function (e) {
-    var raw = e.target.value, d = raw.replace(/\D/g, "");
-    if (d.length > 10 && d.charAt(0) === "1") d = d.slice(1);
-    if (/^\s*\+?1?[\s\-.(]*$/.test(raw)) return;
-    e.target.value = formatPhone(d);
-  });
-  $("age").addEventListener("input", function (e) { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 3); });
-
-  // ----- Validation -----
-  var rules = {
-    customerName: function (v) {
-      if (!v) return "Please enter your name.";
-      if (v.replace(/[^A-Za-zÀ-ÿ]/g, "").length < 2) return "Please enter your full name.";
-      return "";
-    },
-    phone: function (v) {
-      if (!v) return "Please enter your mobile number so we can text you.";
-      var d = phoneDigits(v);
-      if (d.length < 10) return "That number looks short. We need all 10 digits, like 239-555-0123.";
-      if (d.length > 10) return "That number has too many digits. Please use a 10-digit US number.";
-      if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(d)) return "That doesn't look like a valid US number. Please double-check it.";
-      return "";
-    },
-    email: function (v) {
-      if (!v) return "";
-      if (!/^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(v)) return "That email doesn't look quite right (like name@example.com). You can also leave it blank.";
-      return "";
-    },
-    signName: function (v) { return v ? "" : "What name should the sign say?"; },
-    age: function (v) { if (!v) return ""; if (!/^\d{1,3}$/.test(v) || +v > 120) return "Please enter the age as a number, or leave it blank."; return ""; },
-    celebrationDate: function (v) {
-      if (!v) return "Please pick the date of the celebration.";
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return "Please pick a valid date.";
-      if (v < todayISO()) return "That date has already passed. Please pick a future date.";
-      if (v < earliestISO()) return "That's too soon to book online. Please text us at " + PHONE_DISPLAY + " and we'll try to fit you in!";
-      return "";
-    },
-    address: function (v) { if (!v) return "Please enter the address where the sign goes."; if (v.length < 6) return "Please enter the full address (street, city, ZIP)."; return ""; },
-    town: function (v) { return v ? "" : "Please choose your town."; },
-    colors: function (v) { return v ? "" : "Please tell us the colors you'd like."; },
-    heardFrom: function (v) { return v ? "" : "Please choose one."; }
-  };
-  var order = ["customerName", "phone", "email", "signName", "age", "celebrationDate", "address", "town", "colors", "heardFrom"];
-  function checkField(id) {
-    var el = $(id), v = el.value.trim();
-    if (id === "phone" && v && phoneDigits(v).length === 10) { el.value = formatPhone(phoneDigits(v)); v = el.value; }
-    var msg = rules[id](v), err = $("err-" + id);
-    el.classList.toggle("invalid", !!msg); el.classList.toggle("valid", !msg && !!v);
-    el.setAttribute("aria-invalid", msg ? "true" : "false");
-    if (err) { err.textContent = msg; err.classList.toggle("show", !!msg); }
-    return !msg;
-  }
-  order.forEach(function (id) {
-    var el = $(id), touched = false;
-    el.addEventListener("blur", function () { if (el.value.trim() || touched) checkField(id); touched = true; });
-    el.addEventListener("input", function () { if (el.classList.contains("invalid")) checkField(id); });
-    el.addEventListener("change", function () { if (el.classList.contains("invalid") || el.tagName === "SELECT" || el.type === "date") checkField(id); });
-  });
-  function showError(html) { var b = $("formError"); b.innerHTML = html; b.classList.toggle("show", !!html); }
-
-  // ----- Submit -----
-  var sending = false;
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    if (sending) return;
-    showError("");
-    var bad = order.filter(function (id) { return !checkField(id); });
-    if (bad.length) {
-      showError(bad.length === 1 ? "Almost there! Please fix the highlighted field above." : "Almost there! Please fix the " + bad.length + " highlighted fields above.");
-      var first = $(bad[0]); first.focus({ preventScroll: true }); first.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
-    }
-    var flair = selectedFlair();
-    // Same payload format the Apps Script already reads (do not rename fields).
-    var data = {
-      customerName: (TEST_MODE ? "[TEST] " : "") + $("customerName").value.trim(),
-      phone: formatPhone(phoneDigits($("phone").value)),
-      email: $("email").value.trim(),
-      celebrationType: currentType(),
-      signName: $("signName").value.trim(),
-      age: $("age").value.trim(),
-      celebrationDate: $("celebrationDate").value,
-      address: $("address").value.trim(),
-      colors: $("colors").value.trim(),
-      theme: $("theme").value.trim(),
-      price: currentPrice(),
-      yardDays: currentDays(),
-      extraDays: extraDays(),
-      total: currentPrice(),
-      pickupDate: pickupISO(),
-      setupDate: setupISO(),
-      flair: flair.join(", "),
-      customerNotes: $("notes").value.trim(),
-      notes: "Town: " + currentTown() + " | Travel: $" + travelFee() + " | " +
-             (flair.length ? "Flair: " + flair.join(", ") + " | " : "") +
-             "Yard time: " + daysLabel() + " | Total: $" + currentPrice() +
-             (pickupISO() ? " | Pickup: " + prettyDate(pickupISO()) : "") +
-             ($("notes").value.trim() ? "\n" + $("notes").value.trim() : ""),
-      heardFrom: $("heardFrom").value,
-      website: $("website").value,
-      pageUrl: location.href,
-      submittedAtLocal: new Date().toString(),
-      town: currentTown(),                  // new: Estero, ..., Lehigh Acres, Naples, Fort Myers Beach, Other
-      travelFee: travelFee()                // new: 15 Lehigh Acres, 20 Naples / Fort Myers Beach, else 0 (already inside price/total)
-    };
-    window.LB_LAST_ORDER = data;
-    var btn = $("submitBtn");
-    sending = true; btn.disabled = true; btn.textContent = "Sending...";
-
-    if (TEST_MODE) {   // PREVIEW: never touches the network
-      console.info("LawnBombs preview: order NOT sent.", data);
-      setTimeout(function () { showThanks(data); }, 300);
-      return;
-    }
-    // text/plain + no-cors skips the CORS preflight Apps Script can't answer; the script parses JSON.
-    fetch(SUBMIT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) })
-      .then(function () { showThanks(data); })
-      .catch(function () {
-        sending = false; btn.disabled = false; updatePrice();
-        showError('Something went wrong sending your request. Please try again, or text us at <a href="sms:' + PHONE_LINK + '">' + PHONE_DISPLAY + "</a>.");
-      });
-  });
-
-  function showThanks(d) {
-    $("tyName").textContent = d.customerName.replace("[TEST] ", "").split(" ")[0] || "friend";
-    var rows = [
-      ["Celebration", d.celebrationType],
-      ["Name on sign", d.signName + (d.age ? " (" + d.age + ")" : "")],
-      ["Date", prettyDate(d.celebrationDate)],
-      ["Address", d.address],
-      ["Town", d.town + (d.travelFee ? " (+$" + d.travelFee + " travel)" : "")],
-      ["Phone", d.phone],
-      ["Setup", "Night before (" + prettyDate(d.setupDate) + ")"],
-      ["Sign up for", d.yardDays + " days" + (d.pickupDate ? " (pickup " + prettyDate(d.pickupDate) + ")" : "")]
-    ];
-    if (d.flair) rows.push(["Flair", d.flair + " (included)"]);
-    rows.push(["Total", "$" + d.total + ", pay after it's up"]);
-    var box = $("summary"); box.textContent = "";
-    rows.forEach(function (r) {
-      var row = document.createElement("div"), a = document.createElement("span"), b = document.createElement("span");
-      a.textContent = r[0]; b.textContent = r[1]; row.appendChild(a); row.appendChild(b); box.appendChild(row);
-    });
-    form.style.display = "none";
-    $("thanks").style.display = "block";
-    $("thanks").focus({ preventScroll: true });
-    $("thanks").scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  $("another").addEventListener("click", function () {
-    form.reset();
-    document.querySelectorAll(".flair").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
-    flairChanged();
-    form.querySelectorAll(".invalid, .valid").forEach(function (el) { el.classList.remove("invalid", "valid"); });
-    form.querySelectorAll(".err").forEach(function (el) { el.classList.remove("show"); el.textContent = ""; });
-    sending = false; $("submitBtn").disabled = false; showError("");
-    $("thanks").style.display = "none"; form.style.display = "";
-    updatePrice();
-    form.scrollIntoView({ block: "start" });
-  });
-})();
-</script>
+<script src="js/towns.js"></script>
+<script src="js/flair.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
