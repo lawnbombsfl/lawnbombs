@@ -9,6 +9,11 @@
   var MAX_DAYS = 5;
   var MAX_FLAIR = 5;   // flair pieces per sign (all included, price never changes)
 
+  // Order script (Google Apps Script web app, lawnbombs-leads). Same /exec URL as the old live form.
+  var SUBMIT_URL = "https://script.google.com/macros/s/AKfycbz5iW0TlUrADO5mq7DhDCYyB1bAmkLjzN8mmm73J0GSEK6RNN70KMLZXTd2-Usg0sGg/exec";
+  var IS_LIVE_SITE = /(^|\.)lawnbombsfl\.com$/.test(location.hostname);
+  var sending = false;
+
   // Picked flair ids, in the order they were picked. This Set is the single source of truth:
   // the count, Review step and order payload all read from it (never from the DOM).
   var selectedFlair = new Set();
@@ -573,8 +578,7 @@
   }
 
   /* ============================================================
-     ORDER PAYLOAD (built for preview only; NEVER sent on this branch)
-     Field names match what the order script already reads.
+     ORDER PAYLOAD: field names match what the order script (lawnbombs-leads-v4.gs) reads.
      ============================================================ */
   function shiftISO(iso, n) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return "";
@@ -595,7 +599,8 @@
     var notes = $("#notes").value.trim();
     var pickup = yardDates(eventDate, price.days).pickup;
     return {
-      customerName: "[PREVIEW] " + $("#customer-name").value.trim(),
+      // Same rule as the old live form: orders from anywhere but the real site are marked [TEST].
+      customerName: (IS_LIVE_SITE ? "" : "[TEST] ") + $("#customer-name").value.trim(),
       phone: formatPhone($("#mobile").value),
       email: "",
       celebrationType: $("#occasion").value,
@@ -617,6 +622,8 @@
              (flair.length ? "Flair: " + flair.join(", ") + " | " : "") +
              "Yard time: " + price.days + " days | Total: $" + price.total +
              (notes ? "\n" + notes : ""),
+      heardFrom: "",
+      website: ($("#lb-hp") || {}).value || "",   // honeypot (bots fill it; the script then saves nothing)
       pageUrl: location.href,
       submittedAtLocal: new Date().toString(),
       town: townName,
@@ -640,17 +647,41 @@
     if (!validateStep(1)) { showStep(1); focusFirstInvalid(); return; }
     if (!validateStep(4)) { showStep(4); focusFirstInvalid(); return; }
 
-    // PREVIEW ONLY: orders are disabled on this branch. Nothing is sent anywhere
-    // (no fetch, no XHR, no sendBeacon, no form action) on any hostname.
-    // The thank-you panel shows "Preview only: this order wasn't sent."
+    if (sending) return;
     var price = computePrice();
     var townName = $("#town").value;
     var eventDate = $("#event-date").value;
 
     var picked = pickedFlairNames();
     var payload = buildOrderPayload();
-    window.LB_LAST_ORDER = payload;   // for checking only; never sent
-    if (window.console && console.info) console.info("LawnBombs preview: order NOT sent.", payload);
+    var btn = $("#submit-order"), err = $("#submit-error");
+    err.hidden = true;
+    sending = true;
+    btn.disabled = true;
+    btn.textContent = "Sending…";
+    // Same request as the old live form: text/plain + no-cors, so the browser skips the CORS
+    // preflight that Apps Script can't answer. The script parses the body as JSON.
+    // no-cors means the reply can't be read: success = the request reached Google.
+    fetch(SUBMIT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    }).then(function () {
+      sending = false;
+      btn.disabled = false;
+      btn.textContent = "Send my order";
+      showThanks(price, townName, eventDate, picked);
+    }).catch(function () {
+      sending = false;
+      btn.disabled = false;
+      btn.textContent = "Try again";
+      err.hidden = false;
+      err.scrollIntoView({ block: "nearest" });
+    });
+  }
+
+  function showThanks(price, townName, eventDate, picked) {
     var summaryHtml =
       '<dl class="thanks-dl">' +
       '<div><dt>Total</dt><dd><strong>$' + price.total + '</strong></dd></div>' +
@@ -720,6 +751,9 @@
 
   function resetWizard() {
     $("#order-form").reset();
+    $("#submit-error").hidden = true;
+    $("#submit-order").disabled = false;
+    $("#submit-order").textContent = "Send my order";
     selectedFlair.clear();
     hideFlairLimit();
     $$(".flair-card").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });

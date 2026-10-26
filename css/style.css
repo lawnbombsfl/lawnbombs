@@ -750,25 +750,18 @@ img[src*="-set.jpg"] { object-fit: contain !important; background: #F3F1EC; }
 .thanks-flair { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: center; margin: 0 0 1.25rem; }
 .thanks-flair li { background: var(--white); border: 2px solid var(--ink); border-radius: 999px; padding: .2em .8em; font-weight: 600; font-size: .85rem; }
 
-/* ---------- Preview banner (orders disabled on this branch) ---------- */
-.preview-banner {
-  background: #ffe14d;
-  color: #1a1a1a;
-  border-bottom: 3px solid #1a1a1a;
-  text-align: center;
-  font-weight: 700;
-  font-size: .9rem;
-  padding: .45em .8em;
-  line-height: 1.3;
-}
-.preview-banner a { color: inherit; text-decoration: underline; }
-.preview-notice {
+/* ---------- Order send failure + honeypot ---------- */
+.submit-error {
   background: #fff4b8;
-  border: 2px solid #1a1a1a;
+  color: #1a1a1a;
+  border: 3px solid #1a1a1a;
   border-radius: 12px;
   padding: .7em .9em;
+  font-weight: 700;
+  margin: 1rem 0 0;
 }
-.preview-notice a { color: inherit; text-decoration: underline; }
+.submit-error a { color: inherit; text-decoration: underline; }
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
 /* ---------- Flair limit (max 5) ---------- */
 .wizard-totalbar { position: relative; }

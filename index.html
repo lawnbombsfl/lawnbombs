@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
 <title>LawnBombs — Yard Greeting Signs in Lee County, FL | $90 Flat</title>
 <meta name="description" content="LawnBombs sets up bright custom yard greeting signs in Estero, Bonita Springs, Fort Myers, Lehigh Acres and nearby. $90 flat with 2 days and up to 5 flair pieces. Text 239-494-2377.">
 <link rel="canonical" href="https://lawnbombsfl.com/">
@@ -81,7 +80,6 @@
 </head>
 <body>
 
-<div class="preview-banner" role="status">Preview, orders are off. To book, <a href="sms:+12394942377">text 239-494-2377</a>.</div>
 
 <a class="skip-link" href="#main">Skip to content</a>
 
@@ -432,6 +430,9 @@
           <div class="review-price-breakdown" id="review-breakdown">
             <!-- rendered by app.js -->
           </div>
+          <p class="submit-error" id="submit-error" role="alert" hidden>Oops, your order didn't go through. Please try again, or <a href="sms:+12394942377">text 239-494-2377</a> and we'll book it by text.</p>
+          <!-- Honeypot: people never see or fill this; bots do, and the order script then saves nothing. -->
+          <div class="hp-field" aria-hidden="true"><label for="lb-hp">Leave this empty</label><input type="text" id="lb-hp" name="lb-hp" tabindex="-1" autocomplete="off"></div>
                     <p class="form-footnote">Questions? <a href="sms:+12394942377">Text 239-494-2377</a></p>
         </section>
 
@@ -440,8 +441,8 @@
       <!-- THANK YOU -->
       <div class="thanks" id="thanks" hidden>
         <svg viewBox="0 0 24 24" width="48" height="48" aria-hidden="true" focusable="false" class="thanks-check"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 12.5l3.3 3.3L17 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <h2 id="thanks-title">Preview only</h2>
-        <p class="preview-notice" id="preview-notice"><strong>Preview only: this order wasn't sent.</strong> To book for real, <a href="sms:+12394942377">text 239-494-2377</a>.</p>
+        <h2 id="thanks-title">🎉 We've got it!</h2>
+        <p>We'll text you to confirm the details. Pay after your sign is up — no payment needed now.</p>
         <div class="thanks-summary" id="thanks-summary"></div>
         <button type="button" class="btn btn--secondary" id="thanks-close">Close</button>
       </div>
