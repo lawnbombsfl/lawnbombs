@@ -536,6 +536,7 @@
     var name = $("#customer-name").value.trim() || "—";
     var mobile = formatPhone($("#mobile").value) || "—";
     var notes = $("#notes").value.trim();
+    var heard = $("#heard-from").value || "—";
 
     // Bug fix: this used Array.prototype.slice.call(selectedFlair), which always returns []
     // for a Set (a Set has no length or index properties), so Review showed "Flair (0)".
@@ -553,7 +554,8 @@
       ["Town", town],
       ["Days in yard", days + (days === "1" ? " day" : " days")],
       ["Your name", name],
-      ["Mobile number", mobile]
+      ["Mobile number", mobile],
+      ["Heard about us", heard]
     ];
     if (notes) rows.push(["Notes", notes]);
 
@@ -622,7 +624,7 @@
              (flair.length ? "Flair: " + flair.join(", ") + " | " : "") +
              "Yard time: " + price.days + " days | Total: $" + price.total +
              (notes ? "\n" + notes : ""),
-      heardFrom: "",
+      heardFrom: $("#heard-from").value || "",
       website: ($("#lb-hp") || {}).value || "",   // honeypot (bots fill it; the script then saves nothing)
       pageUrl: location.href,
       submittedAtLocal: new Date().toString(),
