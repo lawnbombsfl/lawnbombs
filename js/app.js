@@ -165,7 +165,9 @@
      FLAIR PICKER (Step 2)
      ============================================================ */
   function renderFlairChips() {
-    var categories = [];
+    var categories = (window.FLAIR_GROUPS || []).filter(function (g) {
+      return FLAIR.some(function (f) { return f.category === g; });
+    });
     FLAIR.forEach(function (f) { if (categories.indexOf(f.category) === -1) categories.push(f.category); });
     var row = $("#flair-chips");
     row.innerHTML = "";
@@ -184,19 +186,25 @@
       chip.addEventListener("click", function () {
         $$(".chip", row).forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
         chip.setAttribute("aria-pressed", "true");
+        if (label !== "All") setGroupOpen(label, true);
         filterFlair(label);
+        var grid = $("#flair-grid");
+        if (grid && label !== "All") {
+          var sec = grid.querySelector('.flair-group[data-group="' + label.replace(/"/g, '\\"') + '"]');
+          if (sec && sec.scrollIntoView) sec.scrollIntoView({ block: "start", behavior: "smooth" });
+        }
       });
       return chip;
     }
   }
 
 
-  /* ---- Flair search: matches name + tags, case-insensitive, partial ---- */
+  /* ---- Flair search: matches name + group, case-insensitive, partial ---- */
   var flairQuery = "";
   function flairMatches(item) {
     var q = flairQuery.trim().toLowerCase();
     if (!q) return true;
-    var hay = (item.name + " " + (item.tags || []).join(" ")).toLowerCase();
+    var hay = (item.name + " " + item.category + " " + (item.tags || []).join(" ")).toLowerCase();
     return q.split(/\s+/).every(function (w) { return hay.indexOf(w) !== -1; });
   }
   function setupFlairSearch(onChange) {
@@ -222,22 +230,49 @@
   var flairCategory = "All";
   var flairById = {};
   FLAIR.forEach(function (f) { flairById[f.id] = f; });
+  // Which group sections the customer has opened (collapsed sections keep their lazy images unloaded).
+  var openGroups = {};
+
+  function setGroupOpen(group, open) {
+    openGroups[group] = !!open;
+    var grid = $("#flair-grid");
+    if (!grid) return;
+    $$(".flair-group", grid).forEach(function (sec) {
+      if (sec.dataset.group === group) applyGroupState(sec);
+    });
+  }
+  function applyGroupState(sec) {
+    var searching = !!flairQuery.trim();
+    var open = searching || flairCategory !== "All" || !!openGroups[sec.dataset.group];
+    var head = sec.querySelector(".flair-group__head");
+    var body = sec.querySelector(".flair-grid");
+    head.setAttribute("aria-expanded", open ? "true" : "false");
+    body.hidden = !open;
+    sec.classList.toggle("is-open", open);
+  }
+
   function filterFlair(category) {
     if (category) flairCategory = category;
     var shown = 0;
-    $$(".flair-card", $("#flair-grid")).forEach(function (card) {
-      var item = flairById[card.dataset.id];
-      var show = (flairCategory === "All" || card.dataset.category === flairCategory) && (!item || flairMatches(item));
-      card.style.display = show ? "" : "none";
-      if (show) shown++;
+    $$(".flair-group", $("#flair-grid")).forEach(function (sec) {
+      var inGroup = flairCategory === "All" || sec.dataset.group === flairCategory;
+      var groupShown = 0;
+      $$(".flair-card", sec).forEach(function (card) {
+        var item = flairById[card.dataset.id];
+        var show = inGroup && (!item || flairMatches(item));
+        card.style.display = show ? "" : "none";
+        if (show) groupShown++;
+      });
+      sec.hidden = groupShown === 0;
+      var c = sec.querySelector(".flair-group__count");
+      if (c) c.textContent = groupShown;
+      applyGroupState(sec);
+      shown += groupShown;
     });
     setFlairEmpty(shown === 0);
   }
 
-  function renderFlairGrid() {
-    var grid = $("#flair-grid");
-    grid.innerHTML = "";
-    FLAIR.forEach(function (item) {
+  function makeFlairCard(item) {
       var card = document.createElement("button");
       card.type = "button";
       card.className = "flair-card";
@@ -263,6 +298,9 @@
       var img = document.createElement("img");
       img.alt = item.name + " flair";
       img.loading = "lazy";
+      img.decoding = "async";
+      img.width = 320;
+      img.height = 320;
       img.onerror = function () { img.remove(); placeholder.hidden = false; thumb.classList.add("is-missing"); };
       img.src = item.img;
       thumb.appendChild(img);
@@ -293,9 +331,56 @@
         card.setAttribute("aria-pressed", selectedFlair.has(item.id) ? "true" : "false");
         updateFlairCount();
       });
+      return card;
+  }
 
-      grid.appendChild(card);
+  function renderFlairGrid() {
+    var grid = $("#flair-grid");
+    grid.innerHTML = "";
+    var groups = (window.FLAIR_GROUPS || []).slice();
+    FLAIR.forEach(function (f) { if (groups.indexOf(f.category) === -1) groups.push(f.category); });
+    var first = true;
+    groups.forEach(function (group, gi) {
+      var items = FLAIR.filter(function (f) { return f.category === group; });
+      if (!items.length) return;
+      var sec = document.createElement("section");
+      sec.className = "flair-group";
+      sec.dataset.group = group;
+
+      var head = document.createElement("button");
+      head.type = "button";
+      head.className = "flair-group__head";
+      head.id = "flair-group-head-" + gi;
+      head.setAttribute("aria-controls", "flair-group-body-" + gi);
+      head.innerHTML = '<span class="flair-group__name"></span><span class="flair-group__count"></span><span class="flair-group__chev" aria-hidden="true">▾</span>';
+      head.querySelector(".flair-group__name").textContent = group;
+      head.querySelector(".flair-group__count").textContent = items.length;
+      head.addEventListener("click", function () {
+        if (flairQuery.trim() || flairCategory !== "All") return;   // all matches stay open while filtering
+        setGroupOpen(group, !openGroups[group]);
+      });
+
+      var body = document.createElement("div");
+      body.className = "flair-grid";
+      body.id = "flair-group-body-" + gi;
+      body.setAttribute("role", "group");
+      body.setAttribute("aria-labelledby", head.id);
+      items.forEach(function (item) { body.appendChild(makeFlairCard(item)); });
+
+      sec.appendChild(head);
+      sec.appendChild(body);
+      grid.appendChild(sec);
+      if (first) { openGroups[group] = true; first = false; }   // first group starts open
+      applyGroupState(sec);
     });
+    var more = document.getElementById("flair-more-note");
+    if (more && window.FLAIR_MORE_NOTE) {
+      more.textContent = window.FLAIR_MORE_NOTE + " ";
+      var a = document.createElement("a");
+      a.href = "sms:+12394942377";
+      a.textContent = "Text 239-494-2377";
+      more.appendChild(a);
+    }
   }
 
   function updateFlairCount() {
@@ -305,6 +390,7 @@
     if (bar) bar.textContent = n + " of " + MAX_FLAIR + " flair";
     var grid = $("#flair-grid");
     if (grid) grid.classList.toggle("is-maxed", n >= MAX_FLAIR);
+    $$(".flair-grid", grid || document).forEach(function (g) { g.classList.toggle("is-maxed", n >= MAX_FLAIR); });
   }
 
   var flairLimitTimer = null;

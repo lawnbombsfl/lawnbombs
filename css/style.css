@@ -785,3 +785,21 @@ img[src*="-set.jpg"] { object-fit: contain !important; background: #F3F1EC; }
 .polaroid img:focus-visible { outline: 4px solid var(--purple); outline-offset: 4px; }
 .flair-card__thumb { background: var(--cream-deep); }   /* calm, neutral while a photo loads */
 .flair-card__thumb.is-missing { background: linear-gradient(135deg, var(--teal), var(--purple)); }   /* real "Photo coming" tile */
+
+/* ---- Flair groups (real inventory, Oct 27, 2026): collapsible sections ---- */
+.flair-groups { margin: 1rem 1rem 0; }
+.flair-group { border: 3px solid var(--ink); border-radius: var(--radius-md); background: var(--white); margin-bottom: .75rem; box-shadow: 3px 3px 0 var(--ink); }
+.flair-group__head { display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 52px; padding: .6rem 1rem; background: none; border: 0; cursor: pointer; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--ink); text-align: left; }
+.flair-group__name { flex: 1; }
+.flair-group__count { font-size: .8rem; font-weight: 700; background: var(--teal); border: 2px solid var(--ink); border-radius: 999px; padding: .1em .6em; }
+.flair-group__chev { transition: transform .2s ease; font-size: 1.1rem; }
+.flair-group.is-open .flair-group__chev { transform: rotate(180deg); }
+.flair-group.is-open .flair-group__head { border-bottom: 3px solid var(--ink); }
+.wizard .flair-group .flair-grid { margin: 0; padding: .75rem; }
+.wizard-body.is-flair-step .flair-group .flair-grid { margin-left: 0; margin-right: 0; }
+.flair-groups.is-maxed .flair-card[aria-pressed="false"] { opacity: .55; }
+.flair-group .flair-card__thumb { background: #fff; }
+.flair-more-note { margin: .5rem 1rem 1rem; padding: 1rem; text-align: center; font-weight: 600; border: 3px dashed var(--ink); border-radius: var(--radius-md); background: var(--white); color: var(--ink); }
+.flair-more-note a, .teaser-more a { color: inherit; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.teaser-card img[src*="flair-pieces/"] { background: #fff; aspect-ratio: 1 / 1; }
+.teaser-more { text-align: center; font-weight: 600; margin: 0 0 1.25rem; color: #013f41; }
