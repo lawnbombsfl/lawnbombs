@@ -3,7 +3,7 @@
 // Groups (FLAIR_GROUPS) are shown in this order as collapsible sections in the picker.
 window.FLAIR_IMG_BASE = "img/flair-pieces/";
 window.FLAIR_IMG_EXT = ".webp";
-window.FLAIR_GROUPS = ["Baby", "Birthday & Party", "Sports", "Graduation", "School", "Over the Hill", "Animals", "Tropical", "Stars & Accents", "Glam & Teen", "Emoji", "Love & Bridal", "Music", "Cancer Awareness", "Home & Patriotic", "Vehicles", "Other"];
+window.FLAIR_GROUPS = ["Baby", "Birthday & Party", "Sports", "Graduation", "School", "Over the Hill", "Animals", "Tropical", "Glam & Teen", "Emoji", "Love & Bridal", "Music", "Cancer Awareness", "Home & Patriotic", "Vehicles", "Other"];
 // Line shown under the picker for pieces we have but don't list online.
 window.FLAIR_MORE_NOTE = "Character, superhero, video game and local school pieces available, text us what you’re looking for.";
 window.FLAIR = [
@@ -34,16 +34,10 @@ window.FLAIR = [
   {"id": "purple-striped-candle", "name": "Purple striped candle", "category": "Birthday & Party"},
   {"id": "green-striped-candle", "name": "Green striped candle", "category": "Birthday & Party"},
   {"id": "sweet-16", "name": "“Sweet 16” sign", "category": "Birthday & Party"},
-  {"id": "blue-glitter-balloons", "name": "Blue glitter balloons", "category": "Birthday & Party"},
-  {"id": "black-balloon-bouquet", "name": "Black balloon bouquet", "category": "Birthday & Party"},
-  {"id": "gold-balloon-bouquet", "name": "Gold balloon bouquet", "category": "Birthday & Party"},
-  {"id": "black-balloons", "name": "Black balloons", "category": "Birthday & Party"},
-  {"id": "champagne-balloons", "name": "Champagne balloons", "category": "Birthday & Party"},
-  {"id": "pink-glitter-balloons", "name": "Pink glitter balloons", "category": "Birthday & Party"},
-  {"id": "purple-balloon-bouquet", "name": "Purple balloon bouquet", "category": "Birthday & Party"},
   {"id": "beer-mug", "name": "Beer mug", "category": "Birthday & Party"},
   {"id": "champagne-toast", "name": "Champagne toast", "category": "Birthday & Party"},
   {"id": "cheers-wine-glasses", "name": "Cheers wine glasses", "category": "Birthday & Party"},
+  {"id": "rainbow-with-clouds", "name": "Rainbow with clouds", "category": "Birthday & Party"},
   {"id": "soccer-ball", "name": "Soccer ball", "category": "Sports"},
   {"id": "soccer-ball-3d", "name": "Soccer ball (3D)", "category": "Sports"},
   {"id": "baseball-and-bats", "name": "Baseball and bats", "category": "Sports"},
@@ -124,15 +118,6 @@ window.FLAIR = [
   {"id": "tropical-floral-spray", "name": "Tropical floral spray", "category": "Tropical"},
   {"id": "monstera-floral-cluster", "name": "Monstera floral cluster", "category": "Tropical"},
   {"id": "long-floral-garland", "name": "Long floral garland", "category": "Tropical"},
-  {"id": "silver-glitter-star-large", "name": "Silver glitter star (large)", "category": "Stars & Accents"},
-  {"id": "gold-star", "name": "Gold star", "category": "Stars & Accents"},
-  {"id": "magenta-glitter-star", "name": "Magenta glitter star", "category": "Stars & Accents"},
-  {"id": "red-star", "name": "Red star", "category": "Stars & Accents"},
-  {"id": "small-glitter-stars-assorted", "name": "Small glitter stars (assorted)", "category": "Stars & Accents"},
-  {"id": "pink-star", "name": "Pink star", "category": "Stars & Accents"},
-  {"id": "black-star", "name": "Black star", "category": "Stars & Accents"},
-  {"id": "round-circle-backers", "name": "Round circle backers", "category": "Stars & Accents"},
-  {"id": "rainbow-with-clouds", "name": "Rainbow with clouds", "category": "Stars & Accents"},
   {"id": "handbag", "name": "Handbag", "category": "Glam & Teen"},
   {"id": "shopping-bag", "name": "Shopping bag", "category": "Glam & Teen"},
   {"id": "hot-coffee-cup", "name": "Hot coffee cup", "category": "Glam & Teen"},

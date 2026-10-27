@@ -803,3 +803,4 @@ img[src*="-set.jpg"] { object-fit: contain !important; background: #F3F1EC; }
 .flair-more-note a, .teaser-more a { color: inherit; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
 .teaser-card img[src*="flair-pieces/"] { background: #fff; aspect-ratio: 1 / 1; }
 .teaser-more { text-align: center; font-weight: 600; margin: 0 0 1.25rem; color: #013f41; }
+.faq-letters-img { display: block; width: 100%; max-width: 520px; height: auto; margin: .6em 0 .2em; border-radius: 10px; }
